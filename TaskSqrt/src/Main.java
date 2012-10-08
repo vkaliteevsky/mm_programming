@@ -1,0 +1,18 @@
+// Извлечение корня из действительного числа без использования операции извлечения корня
+// Калитеевский В.Н.
+// (с) 2012
+
+import java.util.Scanner;
+
+
+public class Main {
+
+
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		double d = Double.parseDouble(sc.next());
+		System.out.print(Sqrt.sqrt(d));
+		
+	}
+
+}
