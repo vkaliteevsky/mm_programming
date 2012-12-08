@@ -6,5 +6,5 @@
 
 
 abstract class Palindrom {
-	public abstract boolean isPalindrom(String s1, String s2);
+	public abstract boolean isPalindrom(String s);
 }
