@@ -1,12 +1,19 @@
+/*
+ * Калитеевский
+ * (с)2012
+ */
+
+import java.io.IOException;
+
 
 public class Main {
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 
+	public static void main(String[] args) throws IOException {
+		TextAnalysis text = new TextAnalysis();
+		text.analize("file.txt");
+//		System.out.print("Ok");
+		text.results();
 	}
 
 }
