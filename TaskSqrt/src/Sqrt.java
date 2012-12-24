@@ -1,4 +1,3 @@
-
 public class Sqrt {
 	public static double sqrt(double d){
 		double a = d/2;
@@ -12,6 +11,4 @@ public class Sqrt {
 		}
 		return a;
 	}
-
-
 }
