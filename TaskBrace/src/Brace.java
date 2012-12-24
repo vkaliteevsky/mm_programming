@@ -1,6 +1,5 @@
 
 public class Brace {
-//	public Object name;
 	public Brace(){
 		name="";
 	}
