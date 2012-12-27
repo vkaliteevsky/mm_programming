@@ -10,7 +10,8 @@ public class Main {
 		int [][] A = {{1,1},{1,1},{1,1}};
 		int [][] B = {{1,1,1,1},{1,1,1,1}};
 		MatrixMult mm = new MatrixMult(A, B);
-		int [][] C = mm.multiply();
+		mm.multiply();
+		mm.show();
 
 	}
 

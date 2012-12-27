@@ -1,4 +1,3 @@
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -11,6 +10,7 @@ public class MatrixMult {
 	MatrixMult(int [][] A_, int [][] B_){
 		A = A_;
 		B = B_;
+		C = new int [A.length][B[0].length];
 	}
     private class Thread implements Runnable{        
         int i, j;
@@ -20,17 +20,17 @@ public class MatrixMult {
         }
     	
     	public void run() {
-           System.out.print("run");
+          // System.out.print("run");
             int tmp = 0;
             int res = 0;
 
-            for(int n = 0; i < A[0].length; n++){
-                for(int m = 0; j < A[0].length; m++){
-                    tmp += A[i][n]*B[m][j];
-                }
-                res = tmp;
+            for(int n = 0; n < A[0].length; n++){
+                    tmp += A[i][n]*B[n][j];
             }
+
+            res = tmp;
             C[i][j] = res;
+            
     	}
     
     }
@@ -41,33 +41,29 @@ public class MatrixMult {
         int length_A = A.length;
         int length_B = B.length;
 		if ((length_A == 0) || (length_B == 0)) {
-         System.out.print("length_A == 0) || (length_B == 0");
 			return false;
         }
         for(int i = 1; i < length_A; i++) {
             if (tmp_A != A[i].length) {
-                System.out.print("tmp_A != A[i].length");
                 return false;
             }
         }
 
         for(int i = 1; i < length_B; i++) {
             if (tmp_B != B[i].length) {
-                System.out.print("tmp_B != B[i].length");
 
                 return false;
             }
         }
         if (A[0].length != B.length) {
-            System.out.print("A[0].length != B.length");	
             return false;
         }
         return true;
 	}
-	public int[][] multiply(){
-		int[][]C = null;
+
+	public void multiply(){
 		if (!(resolution(A, B))){
-			return C;
+			throw new IllegalArgumentException();
 		}
 
         ExecutorService ex;
@@ -79,12 +75,20 @@ public class MatrixMult {
         		ex.submit(new Thread(i, j));
         	}
         }
+        if (ex.isTerminated()){
+	        ex.shutdown();
+	        return;
+        }
+	}
+	
+	public void show(){
         for(int i = 0; i < C.length; i++) {
         	for(int j = 0; j < C[0].length; j++) {
         		System.out.print(C[i][j]);
+        		if(j == C[0].length - 1){
+        			System.out.print("\n");
+        		}
         	}
         }
-        ex.shutdown();
-        return C;
 	}
 }
