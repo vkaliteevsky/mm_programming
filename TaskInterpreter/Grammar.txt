@@ -1,0 +1,10 @@
+Expr = Let | Fun | expr
+Let  = "Let" Id "=" Expr "in" Expr
+Fun  = "Fun" Id '->' Expr
+expr = term (('+'|'-') term)*
+term = factor (('*'|'/') factor)*
+factor = funcall
+funcall = primary (primary)*
+primary = Numb | Id | ('(' Expr ')')
+Numb = Digit+
+Id = Letter (Letter | Digit)*
