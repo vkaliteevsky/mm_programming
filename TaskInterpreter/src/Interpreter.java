@@ -15,7 +15,6 @@ import Interpreter.Nodes.Number;
 
 public abstract class Interpreter {
 
-	protected int evalCounter;
 
 	public Expression substitute(Expression expr, String id, Expression x)
 			throws Exception {
@@ -60,7 +59,6 @@ public abstract class Interpreter {
 	}
 
 	protected Expression eval(Expression expr) throws Exception {
-		evalCounter++;
 		switch (expr.GetType()) {
 		case BinOp:
 			return eval((BinOp) expr);
@@ -120,16 +118,11 @@ public abstract class Interpreter {
 	}
 
 	public Expression evalExpr(Expression e) throws Exception {
-		evalCounter = 0;
 		return eval(e);
 	}
 
 	abstract Expression eval(FunCall func) throws Exception;
 
 	abstract Expression eval(Let l) throws Exception;
-
-	public int getCounter() {
-		return evalCounter;
-	}
 
 }

@@ -40,7 +40,7 @@ public class Parser {
             case Fun: 
             	return ParseFun();
             default: 
-            	return expr();
+            	return parseAlExpr();
         }
     }
     
@@ -78,14 +78,14 @@ public class Parser {
         return new Let(id, bound, expr);
     }
     
-    private Node expr() throws Exception{
+    private Node parseAlExpr() throws Exception{
         Node left = term();
 
         if(mCurrLexem.GetType() == LexemType.BinOp){
             Operator operator = ((BinOpLexem)mCurrLexem).GetOp();
             if(operator == Operator.Plus || operator == Operator.Minus){
                 NextLexem();
-                return new BinOp(operator, (Expression)left, (Expression)expr());
+                return new BinOp(operator, (Expression)left, (Expression)parseAlExpr());
             }
         }
         return left;
