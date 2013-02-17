@@ -1,5 +1,6 @@
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 public class MatrixMult {
@@ -61,7 +62,7 @@ public class MatrixMult {
         return true;
 	}
 
-	public void multiply(){
+	public void multiply() throws InterruptedException{
 		if (!(resolution(A, B))){
 			throw new IllegalArgumentException();
 		}
@@ -75,20 +76,28 @@ public class MatrixMult {
         		ex.submit(new Thread(i, j));
         	}
         }
-        if (ex.isTerminated()){
-	        ex.shutdown();
-	        return;
+        
+        try {
+            ex.awaitTermination(2, TimeUnit.SECONDS);
+        }catch (InterruptedException e) {
+             e.printStackTrace();
         }
+        return;
+        
 	}
 	
 	public void show(){
         for(int i = 0; i < C.length; i++) {
         	for(int j = 0; j < C[0].length; j++) {
-        		System.out.print(C[i][j]);
+        		System.out.print(C[i][j] + " ");
         		if(j == C[0].length - 1){
         			System.out.print("\n");
         		}
         	}
         }
+	}
+	
+	public int [][] getResult(){
+		return C;
 	}
 }
