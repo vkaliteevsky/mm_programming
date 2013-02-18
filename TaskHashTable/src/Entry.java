@@ -1,22 +1,22 @@
 
-public class Entry {
+public class Entry<type> {
 	private String key;
-	private int counter;
+	private type data;
 
-	public Entry(String _key){
+	public Entry(String _key, type _data){
 		key = _key;
-		counter = 1;
+		data = _data;
 	}
 	
 	public String get_key(){
 		return key;
 	}
 	
-	public int get_counter(){
-		return counter;
+	public type get_data(){
+		return data;
 	}
 	
-	public void counter_inc(){
-		counter++;
+	public void set_data(type _data){
+		data = _data;
 	}
 }
