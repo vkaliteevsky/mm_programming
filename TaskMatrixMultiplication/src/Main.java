@@ -1,10 +1,10 @@
-
-
-/*Калитеевский В.
- *271 группа
- *Перемножение матриц параллельно
- *(с)2012 
+/**
+ * @author vkaliteevskiy
+ * MatrixMult
+ * (c)2012
  */
+
+
 public class Main {
 	public static void main(String[] args) throws InterruptedException {
 		//int [][] A = {{1,1},{1,1},{1,1}};

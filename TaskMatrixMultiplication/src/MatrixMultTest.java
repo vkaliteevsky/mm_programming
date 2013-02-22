@@ -1,3 +1,9 @@
+/**
+ * @author vkaliteevskiy
+ * MatrixMult
+ * (c)2012
+ */
+
 import static org.junit.Assert.*;
 
 import org.junit.Test;
