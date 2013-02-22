@@ -1,7 +1,9 @@
-/*
- * Калитеевский
- * (с)2012
+/**
+ * @author vkaliteevskiy
+ * Calc
+ * (c)2012
  */
+
 
 import java.io.IOException;
 

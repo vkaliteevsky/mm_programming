@@ -1,3 +1,9 @@
+/**
+ * @author vkaliteevskiy
+ * Calc
+ * (c)2012
+ */
+
 
 public class Entry<type> {
 	private String key;

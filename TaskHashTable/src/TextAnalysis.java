@@ -1,5 +1,10 @@
+/**
+ * @author vkaliteevskiy
+ * Calc
+ * (c)2012
+ */
+
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -13,7 +18,7 @@ public class TextAnalysis {
 		
 	}
 	private void add(String s){
-		table.add(s);
+		table.add(s, s);
 	}
 	
 	public void analize(String path) throws IOException{

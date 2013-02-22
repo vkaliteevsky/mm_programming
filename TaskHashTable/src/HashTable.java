@@ -1,3 +1,9 @@
+/**
+ * @author vkaliteevskiy
+ * Calc
+ * (c)2012
+ */
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,7 +121,7 @@ public class HashTable<type> {
         System.out.print("min = " + min + "\n");
         System.out.print("max = " + max + "\n");
         System.out.print("Количество слов: = " + word_count + "\n");
-        //for(List<Entry<type>> list : table) for(Entry<type> entry : list) System.out.print("word, count = " + entry.get_key() + "," + entry.get_data() + "\n"); вывод всех слов
+        for(List<Entry<type>> list : table) for(Entry<type> entry : list) System.out.print("word, count = " + entry.get_key() + "," + entry.get_data() + "\n"); 
 
         
 	}
