@@ -23,7 +23,15 @@ public class MyJPanel extends JPanel {
 		}
 		for (int j = 0; j <= 600; j += 40) {
 			g.drawLine(0, j, 800, j);
-		}
+		}		
+	}
 
+	
+
+	protected void paintUnit(Graphics g, int x, int y){
+		super.paintComponent(g);
+		g.setColor(Color.GREEN);
+		g.drawRect(x, y, 40, 40);
+		
 	}
 }

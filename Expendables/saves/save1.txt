@@ -1,14 +1,10 @@
-Fri Feb 22 10:29:16 GMT+04:00 2013
+Fri Feb 22 15:39:32 GMT+04:00 2013
 Swordsman
 50
 0
 0
 Pikeman
 30
-0
-0
-Archer
-20
 0
 0
 Knight
@@ -16,19 +12,15 @@ Knight
 0
 0
 next 
-Swordsman
+Knight
 50
-0
-0
-Pikeman
-30
 0
 0
 Archer
 20
 0
 0
-Knight
+Swordsman
 50
 0
 0

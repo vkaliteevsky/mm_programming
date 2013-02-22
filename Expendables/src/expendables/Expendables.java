@@ -160,12 +160,10 @@ public class Expendables extends JFrame {
 						Logger.getLogger(Expendables.class.getName()).log(
 								Level.SEVERE, null, ex);
 					}
-
 				}
 			}
 
 		});
-
 		ImagePanel pp = new ImagePanel();
 		try {
 			pp.setImage(ImageIO.read(new File("Expendables.jpg")));

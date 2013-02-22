@@ -1,0 +1,11 @@
+Fri Feb 22 15:47:14 GMT+04:00 2013
+Knight
+50
+0
+0
+next 
+Pikeman
+30
+0
+0
+end

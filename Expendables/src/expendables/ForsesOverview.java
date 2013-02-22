@@ -18,6 +18,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+
 public class ForsesOverview extends JFrame {
 
 	JPanel pane = new JPanel();
