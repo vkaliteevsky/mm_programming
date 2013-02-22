@@ -37,7 +37,7 @@ public class Lexer {
 	}
 
 	private Lexem ReadLexem() throws Exception {
-		if (mPointer > mExpr.length() - 1) {
+		if (mPointer == mExpr.length()) {
 			mEol = true;
 		}
 

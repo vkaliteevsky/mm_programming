@@ -13,7 +13,7 @@ public class Number extends Expression {
 		mValue = Value;
 		mType = ExprType.Number;
 	}
-
+	
 	public int getValue() {
 		return mValue;
 	}

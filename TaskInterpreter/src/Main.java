@@ -15,7 +15,7 @@ public class Main {
        
         Parser p = new Parser();
         LazyInterpreter i = new LazyInterpreter();
-        Node n = p.ParseExpr("let x = 3 in let f = fun y -> x + y in let x = 5 in f 4");
+        Node n = p.ParseExpr("let x = 3 in x+1");
         n = i.evalExpr((Expression)n);
         System.out.print(((Number)n).getValue());
         
