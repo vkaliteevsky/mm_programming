@@ -1,3 +1,9 @@
+/**
+ * @author vkaliteevskiy
+ * PartlyCloudy
+ * (c)2012
+ */
+
 package clouds_tests;
 
 import clouds.Daylights;
