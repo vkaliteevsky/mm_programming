@@ -16,6 +16,11 @@ public abstract class Unit {
 
 	abstract String getName();
 
+	public void setCoord (int x, int y){
+		this.x = x;
+		this.y = y;
+	}
+	
 	abstract int attack();
 
 	abstract void go();

@@ -13,7 +13,8 @@ public class Player {
 	private int gold;
 	String name;
 	ArrayList<Unit> army = new ArrayList();
-
+	String Name;
+	
 	Player(String s) {
 		armyAmount = new int[4];
 		for (int i = 0; i < 4; i++)
@@ -23,7 +24,7 @@ public class Player {
 		// / p.Amount = 0;
 		// s.Amount = 0;
 		gold = 1000;
-		name = s;
+		Name = s;
 	}
 
 	public void setArmy(int a, int b, int c, int d) {

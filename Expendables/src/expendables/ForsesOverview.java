@@ -55,12 +55,6 @@ public class ForsesOverview extends JFrame {
 		pane.setSize(800, 600);
 		pane.setOpaque(false);
 
-		// pane.add(goldValue);
-
-		// pp.add(pane, java.awt.BorderLayout.CENTER);
-		// pp.setBackground(Color.GRAY);
-		// pp.setPreferredSize(new Dimension(800, 600));
-
 		jLabel1.setFont(new java.awt.Font("Tahoma", 1, 40));
 		jLabel1.setText(model.player2.name);
 
@@ -298,6 +292,7 @@ public class ForsesOverview extends JFrame {
 
 				Field f = null;
 				try {
+					model.setModel(model.player1, model.player1.army.get(0), model.player2.army.get(0));
 					f = new Field(controller, model);
 				} catch (IOException ex) {
 					Logger.getLogger(ForsesOverview.class.getName()).log(
@@ -330,7 +325,6 @@ public class ForsesOverview extends JFrame {
 	}
 
 	private javax.swing.JButton jButton1;
-	private javax.swing.JFrame jFrame1;
 	private javax.swing.JLabel jLabel1;
 	private javax.swing.JLabel jLabel10;
 	private javax.swing.JLabel jLabel2;
@@ -341,5 +335,4 @@ public class ForsesOverview extends JFrame {
 	private javax.swing.JLabel jLabel7;
 	private javax.swing.JLabel jLabel8;
 	private javax.swing.JLabel jLabel9;
-	private javax.swing.JPanel jPanel1;
 }

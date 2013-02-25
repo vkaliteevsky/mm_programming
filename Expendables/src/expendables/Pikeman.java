@@ -40,4 +40,6 @@ public class Pikeman extends Unit {
 	String getName() {
 		return "Pikeman";
 	}
+
+
 }

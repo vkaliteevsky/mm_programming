@@ -10,6 +10,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -31,7 +33,14 @@ public class Expendables extends JFrame {
 	// private Controller controller = new Controller(model);
 
 	private void initComponents() throws IOException {
-
+	     
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				System.exit(0);
+			}
+		});
+	      
+	      
 		this.setIconImage(ImageIO.read(new File("icon.jpg")));
 		this.setResizable(false);
 		this.setSize(800, 600);
@@ -137,6 +146,7 @@ public class Expendables extends JFrame {
 										+ "\n");
 							}
 							save.writeBytes("next \n");
+							len = field.model.player2.army.size();
 							for (int i = 0; i < len; i++) {
 								save.writeBytes(field.model.player2.army.get(i)
 										.getName() + "\n");
@@ -148,6 +158,10 @@ public class Expendables extends JFrame {
 										+ "\n");
 							}
 							save.writeBytes("end");
+							save.writeBytes("\n" + field.model.cur.Name + "\n"); 
+							save.writeBytes(String.valueOf(field.model.player1.army.indexOf(field.model.currFirstUnit())) + "\n");
+							save.writeBytes(String.valueOf(field.model.player2.army.indexOf(field.model.currSecondUnit())));
+							
 							JOptionPane.showMessageDialog(thisLink(),
 									"Game was saved successfully");
 
@@ -245,6 +259,7 @@ public class Expendables extends JFrame {
 	}
 
 	public Expendables() throws IOException {
+
 		super("Expendables");
 		initComponents();
 	}

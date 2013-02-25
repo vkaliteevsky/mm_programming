@@ -19,8 +19,10 @@ import java.util.Observable;
 import java.util.Observer;
 import javax.imageio.ImageIO;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -38,7 +40,7 @@ public class Initialization extends JDialog implements ActionListener {
 	Initialization(final NewGame f) throws IOException {
 		super(f);
 		final JTextField nicknameField = new javax.swing.JTextField();
-		label1 = new java.awt.Label();
+		label1 = new JLabel();
 		jButton1 = new javax.swing.JButton();
 
 		this.setIconImage(ImageIO.read(new File("icon.jpg")));
@@ -62,8 +64,10 @@ public class Initialization extends JDialog implements ActionListener {
 		// pp.setBackground(Color.GRAY);
 		pp.setPreferredSize(new Dimension(456, 309));
 
+		label1.setOpaque(false);
 		label1.setText("Nickname:");
 		label1.setFont(new java.awt.Font("Tahoma", 1, 25));
+
 		nicknameField.setText("");
 		nicknameField.setLocale(Locale.UK);
 		nicknameField.setFont(new java.awt.Font("Tahoma", 1, 20));
@@ -136,11 +140,9 @@ public class Initialization extends JDialog implements ActionListener {
 		setVisible(false);
 	}
 
-	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
-		JOptionPane.showMessageDialog(this, "There's no \"there\" there.");
-	}
 
-	private java.awt.Label label1;
+
+	private JLabel label1;
 	private JButton jButton1;
 
 	@Override

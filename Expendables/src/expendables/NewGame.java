@@ -21,11 +21,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class NewGame extends JFrame {// implements ActionListener{
-	private MyField goldValue;
-	private MyField swordsmanValue;
-	private MyField pikemanValue;
-	private MyField knightValue;
-	private MyField archerValue;
+	private MyTextField goldValue;
+	private MyTextField swordsmanValue;
+	private MyTextField pikemanValue;
+	private MyTextField knightValue;
+	private MyTextField archerValue;
 	private Controller controller;
 	private Model model = new Model();
 	Initialization init;
@@ -49,7 +49,7 @@ public class NewGame extends JFrame {// implements ActionListener{
 			public void update(Observable o, Object arg) {
 				if (((Model) o).isError())
 					MyJOptionPane.showMessageDialog(this,
-							"There's no modey to do there.");
+							"There's no money to do there.");
 			}
 
 		};
@@ -76,7 +76,7 @@ public class NewGame extends JFrame {// implements ActionListener{
 		jButton3 = new javax.swing.JButton();
 		jButton4 = new javax.swing.JButton();
 		jButton7 = new javax.swing.JButton();
-		jTextField3 = new MyField() {
+		jTextField3 = new MyTextField() {
 
 			@Override
 			public void update(Observable o, Object arg) {
@@ -84,21 +84,21 @@ public class NewGame extends JFrame {// implements ActionListener{
 						+ ((Model) o).cur.getSwordsman());
 			}
 		};
-		jTextField4 = new MyField() {
+		jTextField4 = new MyTextField() {
 
 			@Override
 			public void update(Observable o, Object arg) {
 				jTextField4.setText("Pikeman: " + ((Model) o).cur.getPikeman());
 			}
 		};
-		jTextField5 = new MyField() {
+		jTextField5 = new MyTextField() {
 
 			@Override
 			public void update(Observable o, Object arg) {
 				jTextField5.setText("Archer: " + ((Model) o).cur.getArcher());
 			}
 		};
-		jTextField6 = new MyField() {
+		jTextField6 = new MyTextField() {
 
 			@Override
 			public void update(Observable o, Object arg) {
@@ -106,7 +106,7 @@ public class NewGame extends JFrame {// implements ActionListener{
 			}
 		};
 
-		goldValue = new MyField() {
+		goldValue = new MyTextField() {
 			@Override
 			public void update(Observable o, Object o1) {
 				setText(((Model) o).cur.getGold());
@@ -125,7 +125,7 @@ public class NewGame extends JFrame {// implements ActionListener{
 
 		ImagePanel pp = new ImagePanel();
 		try {
-			pp.setImage(ImageIO.read(new File("Expendables_menu.jpg")));
+			pp.setImage(ImageIO.read(new File("Expendables_menu3.jpg")));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -134,9 +134,7 @@ public class NewGame extends JFrame {// implements ActionListener{
 		pane.setSize(800, 600);
 		pane.setOpaque(false);
 
-		// pane.add(goldValue);
 
-		// pp.add(pane, java.awt.BorderLayout.CENTER);
 		pp.setBackground(Color.GRAY);
 		pp.setPreferredSize(new Dimension(800, 600));
 
@@ -372,6 +370,7 @@ public class NewGame extends JFrame {// implements ActionListener{
 			public void mouseClicked(MouseEvent evt) {
 				setVisibleFalse();
 				if (model.cur == model.player1) {
+					model.setErrorFalse();
 					NewGame ng = null;
 					try {
 						ng = new NewGame(controller, model);
@@ -383,6 +382,17 @@ public class NewGame extends JFrame {// implements ActionListener{
 					model.setCur2();
 				} else {
 					try {
+						model.setErrorFalse();
+						
+						for (int i=0; i < model.player1.army.size(); i++){
+							System.out.print(i);
+							model.player1.army.get(i).setCoord(i*40, 0);	
+						} 	
+						for (int i=0; i < model.player2.army.size(); i++){
+							System.out.print(i);
+							model.player2.army.get(i).setCoord(i*40, 560);	
+						} 	
+						model.cur = model.player1;
 						ForsesOverview fo = new ForsesOverview(controller,
 								model);
 						fo.setVisible(true);
@@ -430,18 +440,12 @@ public class NewGame extends JFrame {// implements ActionListener{
 	private javax.swing.JButton jButton3;
 	private javax.swing.JButton jButton4;
 	private javax.swing.JButton jButton7;
-	private javax.swing.JFrame jFrame1;
-	private javax.swing.JFrame jFrame2;
-	private javax.swing.JMenu jMenu1;
-	private javax.swing.JMenu jMenu2;
-	private javax.swing.JMenuBar jMenuBar1;
-	private javax.swing.JPanel jPanel1;
 	private MyLabel label1;
 	private MyLabel label2;
-	private MyField jTextField3;
-	private MyField jTextField4;
-	private MyField jTextField5;
-	private MyField jTextField6;
+	private MyTextField jTextField3;
+	private MyTextField jTextField4;
+	private MyTextField jTextField5;
+	private MyTextField jTextField6;
 	private MyJOptionPane error;
 
 }

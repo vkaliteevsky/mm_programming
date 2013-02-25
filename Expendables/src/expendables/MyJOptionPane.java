@@ -15,7 +15,5 @@ import javax.swing.JOptionPane;
  * @author vkalit-lenovo
  */
 public abstract class MyJOptionPane extends JOptionPane implements Observer {
-	// public MyJOptionPane(JFrame f, String s){
 
-	// }
 }

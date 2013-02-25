@@ -5,16 +5,12 @@
  */
 
 
-
 public class Insensitive extends Palindrom {
+
 	@Override
 	boolean equals(Character a, Character b){ 
 		Character.toLowerCase(a);
 		Character.toLowerCase(b);
-		if (a.equals(b)) {
-			return true;
-		} else {
-			return false;
-		}		
+		return (!a.equals(b));		
 	}
 }

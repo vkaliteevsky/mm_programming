@@ -7,31 +7,43 @@
 package expendables;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 public class Field extends JFrame {
-
+	
 	Model model;
 	Controller controller;
-
+	JPanel pane = new JPanel();
+	
 	private void initComponents() throws IOException {
 
-		Graphics g = this.getGraphics();
 
+
+			setLayout(null);
 		this.setIconImage(ImageIO.read(new File("icon.jpg")));
 		this.setResizable(false);
-		this.setSize(800, 600);
-		this.setBackground(Color.GRAY);
-		jPanel1 = new MyJPanel();
+		this.setSize(807, 650);
+
 
 		menu.add(file);
 		file.setText("File");
@@ -55,35 +67,61 @@ public class Field extends JFrame {
 
 		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-		jPanel1.setBackground(new java.awt.Color(200, 200, 200));
+		
+		this.setIconImage(ImageIO.read(new File("icon.jpg")));
+		this.setResizable(false);
+		setLayout(null);
+		
+		this.setLayout(null);
 
-		javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(
-				jPanel1);
-		jPanel1.setLayout(jPanel1Layout);
-		jPanel1Layout.setHorizontalGroup(jPanel1Layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 800,
-				Short.MAX_VALUE));
-		jPanel1Layout.setVerticalGroup(jPanel1Layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.LEADING).addGap(0, 600,
-				Short.MAX_VALUE));
+		ImagePanel pp = new ImagePanel();
+		pp.setLayout(null);
+		pp.setSize(800, 600);
 
-		javax.swing.GroupLayout layout = new javax.swing.GroupLayout(
-				getContentPane());
-		getContentPane().setLayout(layout);
-		layout.setHorizontalGroup(layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.LEADING).addComponent(
-				jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE,
-				javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
-		layout.setVerticalGroup(layout.createParallelGroup(
-				javax.swing.GroupLayout.Alignment.LEADING).addComponent(
-				jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE,
-				javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE));
 
-		jPanel1.paintComponents(g);
+		try {
+			pp.setImage(ImageIO.read(new File("Field_fon.jpg")));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		ImagePanel icon_panel = new ImagePanel();
+		icon_panel.setLayout(null);
+		icon_panel.setSize(39, 39);
+		try {
+			icon_panel.setImage(ImageIO.read(new File("icon__.jpg")));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		icon_panel.setSize(39, 39);
+		icon_panel.setPreferredSize(new Dimension(39, 39));
+		icon_panel.setOpaque(false);
+		this.setPreferredSize(new Dimension(807, 650));
+		field_panel = new MyJPanel(model, controller, pp);
+		//field_panel.setBackground(Color.GRAY);
+		field_panel.setSize(800, 600);
+		field_panel.setPreferredSize(new Dimension(800, 600));
+		//field_panel.add(pp);
+		field_panel.setLayout(null);
+		field_panel.setVisible(true);
+		
+		field_panel.paintComponent();
+		
 
-		pack();
+		getContentPane().add(field_panel);
+
+		
+
+		pp.setPreferredSize(new Dimension(800, 600));
+				
+		this.pack();
 		this.setLocationRelativeTo(null);
+
+
+		
+
 	}
+	
 
 	public Field(Controller c, Model m) throws IOException {
 		model = m;
@@ -98,5 +136,5 @@ public class Field extends JFrame {
 	private JMenuItem toMenu = new JMenuItem();
 	private JMenuBar menu = new JMenuBar();
 	private JMenu file = new JMenu();
-	private javax.swing.JPanel jPanel1;
+	private MyJPanel field_panel;
 }

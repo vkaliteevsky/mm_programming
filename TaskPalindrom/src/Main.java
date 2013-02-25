@@ -8,7 +8,7 @@
 public class Main {
 	public static void main(String arg[]) {
 		String s;
-		s = "    ...,";
+		s = "jJ";
 		s = s.replace(" ", "");
 		
 		Sensitive str = new Sensitive();

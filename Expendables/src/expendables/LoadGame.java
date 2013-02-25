@@ -161,10 +161,22 @@ public class LoadGame extends JFrame {
 							Level.SEVERE, null, ex);
 				}
 			}
-
+			str = save.readLine();
 			model = new Model();
+			if (str == "1") model.cur = model.player1; model.setCur1();
+			if (str == "2") model.cur = model.player2; model.setCur2();
+			
+			
 			model.player1.army = list1;
 			model.player2.army = list2;
+			str = save.readLine();
+			model.setCurrFirstUnit_u(model.player1.army.get(Integer.parseInt(str)));
+			str = save.readLine();
+			model.setCurrSecondUnit_u(model.player2.army.get(Integer.parseInt(str)));
+			
+			
+			
+			
 			controller = new Controller(model);
 
 			button.addMouseListener(new MouseAdapter() {
