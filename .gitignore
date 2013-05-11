@@ -16,6 +16,28 @@ local.properties
 .settings/
 .loadpath
 
+*~
+*.autosave
+*.a
+*.core
+*.moc
+*.o
+*.obj
+*.orig
+*.rej
+*.so
+*.exe
+.#*
+*.*#
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+Thumbs.db
+Makefile*
+*.pro.user*
+bin/
+release/
+
 # External tool builders
 .externalToolBuilders/
 
