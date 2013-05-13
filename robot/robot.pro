@@ -21,7 +21,7 @@ HEADERS  += \
     view/wall.h \
     view/world.h
 
-FORMS    += widget.ui
+FORMS    +=
 
 
 
