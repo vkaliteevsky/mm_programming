@@ -1,7 +1,7 @@
 #ifndef WALL_H
 #define WALL_H
 
-#include <QGraphicsItem>
+#include <QtWidgets/QGraphicsItem>
 #include <QPoint>
 
 class wall : public QGraphicsRectItem

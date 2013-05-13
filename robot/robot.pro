@@ -5,6 +5,7 @@
 #-------------------------------------------------
 
 QT       += core gui
+QT 		 += gui declarative
 
 TARGET = robot5
 TEMPLATE = app
@@ -18,7 +19,6 @@ SOURCES += main.cpp \
 HEADERS  += \
     view/robotview.h \
     view/wall.h \
-    boomdetector.h \
     view/world.h
 
 FORMS    += widget.ui

@@ -9,8 +9,7 @@
 #include <math.h>
 
 robotview::robotview()
-    : angle(-56),
-      color(121,121,121), weight(5), size(0.2), V0(4)// vX(0.5), vY(-0.7)
+    : angle(-56.0), weight(5.0), size(0.2), V0(4)
 {
     setRotation(angle);
 }
@@ -31,7 +30,7 @@ QPainterPath robotview::shape() const
 void robotview::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     setRotation(angle);
-    painter->setBrush(color);
+    painter->setBrush(QColor(121,121,121));
     painter->drawRect(-20,-20,40,40);
 
 }

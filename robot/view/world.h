@@ -2,8 +2,8 @@
 #define WORLD_H
 
 #include <QObject>
-#include <QGraphicsScene>
-#include <QGraphicsView>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsView>
 #include "view/robotview.h"
 #include "view/wall.h"
 
@@ -12,7 +12,7 @@ class world : public QWidget
     Q_OBJECT
 public:
     world(QWidget *parent = 0);
-   // void run();
+    // void run();
 
 protected:
     void timerEvent(QTimerEvent *event);
@@ -27,7 +27,6 @@ private:
 
     bool mColl;
 
-    //QPoint direction;
     void true_coord();
     QPointF pp1;
     QPointF pp2;
