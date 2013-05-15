@@ -14,7 +14,8 @@ world::world(QWidget *parent)
     scene = new QGraphicsScene(-300, -300, 600, 600);
     view = new QGraphicsView(parent);
     view->setScene(scene);
-
+    mDelta = 0.1;
+    stop = false;
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
 
     robot = new robotview;
@@ -36,7 +37,7 @@ world::world(QWidget *parent)
     view->setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Robots"));
     view->resize(800, 600);
     view->show();
-    startTimer(20);
+    startTimer(40);
 
 }
 
@@ -53,7 +54,111 @@ void world::true_coord()
 
 void world::timerEvent(QTimerEvent *)
 {
-    qreal del = 0.1;
+    if (!stop){
+
+        qreal del = mDelta;
+
+        if(!robot->collidesWithItem(newWall)){
+            robot->setAngle(robot->angle);
+            robot->setPos(robot->pos().rx() + robot->V0*del*cos(robot->angle * M_PI/180)
+                          , robot->pos().ry() + robot->V0*del*sin(robot->angle* M_PI/180));
+        } else {
+            if (mColl == false){
+                getRobotFromWall();
+            } else {
+                qreal originAngle = newWall->getAngle();
+                qreal alpha = robot->angle - originAngle;
+                qreal gamma = robot->angle_w;
+                qreal I = robot->momentI;
+                qreal m = robot->weight;
+                qreal forseMoment;
+                qreal K = 0.05;
+                qreal Kv = 0.3;
+                qreal F;
+                qreal F_fr;
+                qreal r = robot->r;
+                qreal V = robot->V;
+
+                F = (robot->V0 - V)*Kv;
+                F_fr = F * sin(-1*alpha * M_PI/180)*K;
+                forseMoment = F_fr * r * sin(-1*alpha * M_PI/180) - F * sin(-1*alpha * M_PI/180) * sin ((45 - (-1)*alpha)*M_PI/180) * r;
+
+                qreal nAngle;
+                qreal nAngle_w;
+                qreal nV;
+
+                nAngle_w = gamma + forseMoment*del/I;
+                nAngle = (alpha + originAngle) - gamma * del;//?
+
+                if ((alpha <= 1)&&(alpha >= -1)){
+                    robot->setPos(robot->pos().rx() +robot->V0*del*cos(newWall->getAngle()*M_PI/180)
+                                  , robot->pos().ry()+robot->V0*del*sin(newWall->getAngle()*M_PI/180));
+                } else if (alpha <= -89){
+                    robot->angle = -90 + originAngle;
+                    stop = true;
+
+
+                } else {
+                    nV = V + (F * cos(alpha*M_PI/180) - F_fr)*del/m;
+
+                    robot->setAngle(nAngle);
+                    turnAndMoveRobot(nAngle_w, V);
+                    robot->angle = nAngle;
+                    robot->angle_w = nAngle_w;
+
+                    QGraphicsRectItem * ss = new QGraphicsRectItem(0, 100, 300, 200);
+                    ss->setBrush(QColor(121,121,9));
+                    scene->addItem(ss);
+                    QGraphicsTextItem *text = new QGraphicsTextItem(" F = " + QString::number(F)
+                                                                    + "\n V = " + QString::number(V)
+                                                                    + "\n Ftp = " + QString::number(F_fr)
+                                                                    + "\n M = " + QString::number(forseMoment)
+                                                                    + "\n angle = " + QString::number(alpha)
+                                                                    + "\n momentI = " + QString::number(robot->momentI)
+                                                                    + "\n angle_w = " + QString::number(gamma) );
+
+                    text->setPos(0, 100);
+                    text->setFont(QFont ("Courier", 14));
+                    scene->addItem(text);
+
+                    robot->V = nV;
+                }
+            }
+        }
+
+    }
+}
+
+QPointF world::interPoint(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal y3, qreal x4, qreal y4)
+{
+    qreal a1 = (y2-y1)/(x2-x1);
+    qreal b1 = y1 - x1*a1;
+
+    qreal a2 = (y4-y3)/(x4-x3);
+    qreal b2 = y3 - x3*a2;
+
+    qreal cx = (b2-b1)/(a1-a2);
+    qreal cy = a1 * cx + b1;
+    return QPointF(cx, cy);
+}
+
+void world::turnAndMoveRobot(qreal nAngle_w, qreal V)
+{
+
+    qreal newX = curPoint.rx()*cos(nAngle_w *M_PI/180) + curPoint.ry()*sin(nAngle_w *M_PI/180);
+    qreal newY = -1*curPoint.rx()*sin(nAngle_w *M_PI/180) + curPoint.ry()*cos(nAngle_w*M_PI/180);
+
+    robot->setPos(robot->pos().rx() + curPoint.rx() - newX
+                  , robot->pos().ry() + curPoint.ry() - newY);
+
+    robot->setPos(robot->pos().rx() + V * mDelta*cos(newWall->getAngle()*M_PI/180)
+                  , robot->pos().ry() + V * mDelta*sin(newWall->getAngle()*M_PI/180));
+
+}
+
+void world::getRobotFromWall()
+{
+    qreal del = mDelta;
     QPointF pos = robot->pos();
     qreal x = pos.x();
     qreal y = pos.y();
@@ -73,116 +178,38 @@ void world::timerEvent(QTimerEvent *)
     QPointF new_p2 = newWall->mapFromScene(p2);
     QPointF new_p3 = newWall->mapFromScene(p3);
     QPointF new_p4 = newWall->mapFromScene(p4);
-    if(!robot->collidesWithItem(newWall))
+    if (newWall->contains(new_p1))
     {
-        robot->setAngle(robot->angle);
-        robot->setPos(robot->pos().rx() + robot->V0*del*cos(robot->angle * M_PI/180)
-                      , robot->pos().ry() + robot->V0*del*sin(robot->angle* M_PI/180));
+        curPoint.setX(p1.rx());
+        curPoint.setY(p1.ry());
     }
-    else
+    else if (newWall->contains(new_p2))
     {
-        if (mColl == false){
-            if (newWall->contains(new_p1))
-            {
-                curPoint.setX(p1.rx());
-                curPoint.setY(p1.ry());
-            }
-            else if (newWall->contains(new_p2))
-            {
-                curPoint.setX(p2.rx());
-                curPoint.setY(p2.ry());
-            }
-            else   if (newWall->contains(new_p3))
-            {
-                curPoint.setX(p3.rx());
-                curPoint.setY(p3.ry());
-            }
-            else  if (newWall->contains(new_p4))
-            {
-                curPoint.setX(p4.rx());
-                curPoint.setY(p4.ry());
-            }
-            QLineF line1 = QLineF(line2->line());
-            QLineF line3(curPoint, QPointF(curPoint.x() -nnx*3,curPoint.ry()-nny*3));
-            QPointF pntIntersect = interPoint(line1.x1(), line1.y1(), line1.x2(), line1.y2(), line3.x1(), line3.y1(), line3.x2(), line3.y2());
-            robot->pos().rx()=pntIntersect.rx()-curPoint.rx();
-            robot->pos().ry()=pntIntersect.ry()-curPoint.ry();
-            curPoint.setX(pntIntersect.rx()-curPoint.rx());
-            curPoint.setY(pntIntersect.ry()-curPoint.ry());
-            mColl = true;
-
-            vector.setP1(curPoint);
-            vector.setP2(QPoint(pp2.rx(), pp2.ry()));
-
-            robot->momentI = robot->weight * robot->size * robot->size / 6; //    1/6*m*a^2
-
-
-            robot->r=robot->size/sqrt(2);
-            robot->V = robot->V0/2;
-
-        } else {
-            qreal cof = newWall->getAngle();
-            qreal alpha = robot->angle - cof;
-            qreal gamma = robot->angle_w;
-            qreal I = robot->momentI;
-            qreal m = robot->weight;
-            qreal M;
-            qreal K = 0.05;
-            qreal Kv = 0.3;
-            qreal F;
-            qreal F_fr;
-            qreal r = robot->r;
-            qreal V = robot->V;
-
-            F = (robot->V0 - V)*Kv;
-            F_fr = F * sin(alpha * M_PI/180)*K;
-            M = F_fr * r * sin(alpha * M_PI/180) - F * sin(alpha * M_PI/180) * sin ((45 - alpha)*M_PI/180) * r;
-
-            qreal nAngle;
-            qreal nAngle_w;
-            qreal nV;
-
-            nAngle_w = gamma + M*del/I;
-            nAngle = (alpha + cof) + gamma * del;
-            if ((alpha <= 1)&&(alpha >= -1)){
-                robot->setPos(robot->pos().rx() +robot->V0*del*cos(newWall->getAngle()*M_PI/180),robot->pos().ry()+robot->V0*del*sin(newWall->getAngle()*M_PI/180));
-            } else if (alpha <= -90){
-                robot->angle = -90;
-            } else {
-                nV = V + (F * cos(alpha*M_PI/180) - F_fr)*del/m;
-
-                robot->setAngle(nAngle);
-                qreal newX = curPoint.rx()*cos(nAngle_w *M_PI/180) + curPoint.ry()*sin(nAngle_w *M_PI/180);
-                qreal newY = -1*curPoint.rx()*sin(nAngle_w *M_PI/180) + curPoint.ry()*cos(nAngle_w*M_PI/180);
-                robot->setPos(robot->pos().rx() + curPoint.rx() - newX, robot->pos().ry() + curPoint.ry() - newY);
-                robot->setPos(robot->pos().rx() + V * del*cos(newWall->getAngle()*M_PI/180), robot->pos().ry() + V * del*sin(newWall->getAngle()*M_PI/180));
-                robot->angle = nAngle;
-                robot->angle_w = nAngle_w;
-                robot->V = nV;
-                QGraphicsTextItem *text = new QGraphicsTextItem(" F = " + QString::number(F)
-                                                                + "\n V = " + QString::number(V)
-                                                                + "\n Ftp = " + QString::number(F_fr)
-                                                                + "\n M = " + QString::number(M)
-                                                                + "\n angle = " + QString::number(alpha)
-                                                                + "\n angle_w = " + QString::number(gamma) );
-                text->setPos(0, 100);
-                text->setFont(QFont ("Courier", 14));
-                scene->addItem(text);
-            }
-        }
-
+        curPoint.setX(p2.rx());
+        curPoint.setY(p2.ry());
     }
-}
+    else   if (newWall->contains(new_p3))
+    {
+        curPoint.setX(p3.rx());
+        curPoint.setY(p3.ry());
+    }
+    else  if (newWall->contains(new_p4))
+    {
+        curPoint.setX(p4.rx());
+        curPoint.setY(p4.ry());
+    }
+    QLineF line1 = QLineF(line2->line());
+    QLineF line3(curPoint, QPointF(curPoint.x() -nnx*3,curPoint.ry()-nny*3));
+    QPointF pntIntersect = interPoint(line1.x1(), line1.y1(), line1.x2(), line1.y2(), line3.x1(), line3.y1(), line3.x2(), line3.y2());
+    robot->pos().rx()=pntIntersect.rx()-curPoint.rx();
+    robot->pos().ry()=pntIntersect.ry()-curPoint.ry();
+    curPoint.setX(pntIntersect.rx()-curPoint.rx());
+    curPoint.setY(pntIntersect.ry()-curPoint.ry());
 
-QPointF world::interPoint(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal y3, qreal x4, qreal y4)
-{
-    qreal a1 = (y2-y1)/(x2-x1);
-    qreal b1 = y1 - x1*a1;
+    mColl = true;
 
-    qreal a2 = (y4-y3)/(x4-x3);
-    qreal b2 = y3 - x3*a2;
-
-    qreal cx = (b2-b1)/(a1-a2);
-    qreal cy = a1 * cx + b1;
-    return QPointF(cx, cy);
+    robot->momentI = robot->weight * robot->size * robot->size / 6; //    1/6*m*a^2
+    robot->r=2;
+    //robot->r=robot->size/sqrt(2);
+    robot->V = robot->V0/2;
 }

@@ -19,6 +19,8 @@ protected:
     QPointF interPoint(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal y3, qreal x4, qreal y4);
 
 private:
+    void getRobotFromWall();
+    void turnAndMoveRobot(qreal nAngle_w, qreal V);
     QGraphicsScene* scene;
     QGraphicsView* view;
     wall* newWall;
@@ -26,13 +28,13 @@ private:
     QGraphicsLineItem* line2;
 
     bool mColl;
+    bool stop;
 
     void true_coord();
     QPointF pp1;
     QPointF pp2;
     QPointF curPoint;
-
-    QLineF vector;
+    qreal mDelta;
 
 
 };

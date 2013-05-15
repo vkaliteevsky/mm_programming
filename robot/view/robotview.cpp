@@ -9,7 +9,7 @@
 #include <math.h>
 
 robotview::robotview()
-    : angle(-56.0), weight(5.0), size(0.2), V0(4)
+    : angle(-70.0), weight(5.0), size(0.2), V0(10)
 {
     setRotation(angle);
 }
