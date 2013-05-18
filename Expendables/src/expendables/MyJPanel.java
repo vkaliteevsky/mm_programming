@@ -7,28 +7,16 @@
 package expendables;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.imageio.ImageIO;
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JToggleButton;
 import javax.swing.SwingConstants;
 
@@ -156,13 +144,8 @@ public class MyJPanel extends JPanel {
 		
 button2.setSelected(true);
 		button2.setSize(39, 39);
-		
-
-
 		button2.setPreferredSize(new Dimension(39, 39));
 		button2.setLocation(1+x, 1+y);
-
-		
 		JLabel label2= makeLabel(String.valueOf(u.Health) + "   ",JLabel.CENTER, JLabel.CENTER, icon);
 
 		  button2.setLayout(new BorderLayout());

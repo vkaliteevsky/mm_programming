@@ -16,19 +16,29 @@ world::world(QWidget *parent)
     view->setScene(scene);
     mDelta = 0.1;
     stop = false;
-    scene->setItemIndexMethod(QGraphicsScene::NoIndex);
+   // scene->setItemIndexMethod(QGraphicsScene::NoIndex);
+//view->setTransform(-1,1,1);
 
     robot = new robotview;
     robot->setPos(-115, 200);
     scene->addItem(robot);
 
-    newWall = new wall(-300,0,600,-50,-20,0.4);
+    newWall = new wall(-400,-10,80,20,20,0.4);
 
     true_coord();
     line2 = new QGraphicsLineItem(pp1.rx(),pp1.ry(),pp2.rx(),pp2.ry());
-    scene->addItem(line2);
+    //scene->addItem(line2);
 
-    scene->addItem(newWall);
+    QGraphicsRectItem* rect5 = new QGraphicsRectItem(0,0,1,1);
+    //scene->addItem(rect5);
+    //scene->addItem(newWall);
+
+    walls.push_back(newWall);
+
+
+    foreach (wall w, walls) {
+        scene->addItem(w);
+    }
     view->setRenderHint(QPainter::Antialiasing);
     view->setBackgroundBrush(QColor (121,121,9));
     view->setCacheMode(QGraphicsView::CacheBackground);
@@ -37,7 +47,7 @@ world::world(QWidget *parent)
     view->setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Robots"));
     view->resize(800, 600);
     view->show();
-    startTimer(40);
+    startTimer(30);
 
 }
 
@@ -50,6 +60,23 @@ void world::true_coord()
 
     pp1 = QPointF(x+ w/2 - (w/2)*cos(a*M_PI/180), y-(w/2)*sin(a*M_PI/180));
     pp2 = QPointF(-pp1.rx(), -pp1.ry());
+}
+
+void world::true_coord2()
+{
+    QPoint p1 = QPoint(newWall->getX()                       ,newWall->getY());
+    QPoint p2 = QPoint(newWall->getX() + newWall->getWidth() ,newWall->getY());
+    QPoint p3 = QPoint(newWall->getX() + newWall->getWidth() ,newWall->getY() + newWall->getHeight());
+    QPoint p4 = QPoint(newWall->getX()                       ,newWall->getY() + newWall->getHeight());
+
+    qreal angRad = newWall->getAngle()*M_PI/180;
+
+    p1 = QPoint(p1.rx()*cos(angRad) - p1.ry()*sin(angRad), p1.rx()*sin(angRad) + p1.ry()*cos(angRad));
+    p2 = QPoint(p2.rx()*cos(angRad) - p2.ry()*sin(angRad), p2.rx()*sin(angRad) + p2.ry()*cos(angRad));
+    p3 = QPoint(p3.rx()*cos(angRad) - p3.ry()*sin(angRad), p3.rx()*sin(angRad) + p3.ry()*cos(angRad));
+    p4 = QPoint(p4.rx()*cos(angRad) - p4.ry()*sin(angRad), p4.rx()*sin(angRad) + p4.ry()*cos(angRad));
+
+    newWall->setLines(p1, p2, p3, p4);
 }
 
 void world::timerEvent(QTimerEvent *)

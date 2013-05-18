@@ -20,6 +20,7 @@ protected:
 
 private:
     void getRobotFromWall();
+    QList<wall*> walls;
     void turnAndMoveRobot(qreal nAngle_w, qreal V);
     QGraphicsScene* scene;
     QGraphicsView* view;
@@ -31,6 +32,7 @@ private:
     bool stop;
 
     void true_coord();
+    void true_coord2();
     QPointF pp1;
     QPointF pp2;
     QPointF curPoint;

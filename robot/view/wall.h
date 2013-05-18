@@ -14,6 +14,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 public:
+    void setLines(QPointF p1, QPointF p2, QPointF p3, QPointF p4);
     qreal getX()
     {
         return x;
@@ -43,6 +44,8 @@ private:
     qreal angle;
     qreal fric;//friction coefficient
     QColor color;
+
+    QList<QLineF> linesList;
 
 };
 
