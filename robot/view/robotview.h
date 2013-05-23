@@ -51,16 +51,17 @@ public:
 
 
 
-    qreal motorFactor;
+
     qreal angle;
     qreal mass;
     qreal size;
-
+    qreal V0;
+const qreal momentI;
+    qreal motorFactor;
     qreal mAngularVelocity;
     QPointF mV;//vector
 
-    qreal V0;
-        const qreal momentI;
+
     QPointF mForce;//vector
     qreal mForseMoment;
 

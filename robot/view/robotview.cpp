@@ -10,7 +10,7 @@
 #include <math.h>
 
 robotview::robotview()
-    : angle(20), mass(100), size(40), V0(10), momentI(0.00000000000003),motorFactor(5)
+    : angle(15), mass(50), size(40), V0(10), momentI(0.000000000000003),motorFactor(4)
 {
     mV = QPointF(V0*cos(angle*M_PI/180), V0*sin(angle*M_PI/180));
     setRotation(angle);
@@ -65,11 +65,6 @@ void robotview::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
     painter->drawConvexPolygon(arrow);
     painter->restore();
 
-}
-
-void robotview::setAngle(qreal nangle)
-{
-    angle = nangle;
 }
 
 void robotview::updateAngle()
@@ -132,7 +127,7 @@ void robotview::checkCollision(Wall& wall)
                 if (mWalls[i] == &wall) {
                     QMessageBox ms;
                     ms.setText("setNull");
-                    ms.exec();
+                    //ms.exec();
                     mAngularVelocity = 0;
                     setWall(i, NULL);
                 }
@@ -185,6 +180,7 @@ void robotview::updateVelocity(qreal dt){
 
 
             // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            // output indicators
 
             QGraphicsRectItem * ss = new QGraphicsRectItem(0, 150, 300, 200);
             ss->setBrush(QColor(121,121,9));
@@ -208,11 +204,6 @@ void robotview::updateVelocity(qreal dt){
 
         }
     }
-    //qreal mAngularVelocity;
-
-
-
-
     mV += mForce / mass * dt;
     mAngularVelocity += mForseMoment /  momentI * dt;
 }
@@ -246,9 +237,6 @@ void robotview::getRobotFromWall(Wall& wall, int index)
     //QPointF pntIntersect = interPoint(border.x1(), border.y1(), border.x2(), border.y2(), revDirection.x1(), revDirection.y1(), revDirection.x2(), revDirection.y2());
     QPointF pntIntersect = normalPoint(border.x1(), border.y1(), border.x2(), border.y2(), p.rx(), p.ry());
     if (!((pntIntersect.rx() == NAN) || (pntIntersect.ry()==NAN))){
-   //     setPos(this->pos().rx()+ pntIntersect.rx() - p.rx()
-     //           , this->pos().ry() + pntIntersect.ry() - p.ry());
-
         setPos(pos() += pntIntersect -= p);
     } else {
         QMessageBox n;

@@ -11,15 +11,16 @@ TARGET = robot5
 TEMPLATE = app
 
 
-SOURCES += main.cpp \
-    view/robotview.cpp \
-    view/wall.cpp \
-    view/world.cpp
+SOURCES += \
+    view/Robotview.cpp \
+    view/Wall.cpp \
+    view/World.cpp \
+    Main.cpp
 
 HEADERS  += \
-    view/robotview.h \
-    view/world.h \
-    view/wall.h
+    view/Robotview.h \
+    view/Wall.h \
+    view/World.h
 
 FORMS    +=
 
