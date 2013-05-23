@@ -11,6 +11,7 @@ world::world(QWidget *parent)
     :QWidget(parent), isRobotContact(false)
 {
 
+
     scene = new QGraphicsScene(-300, -300, 600, 600);
     view = new QGraphicsView(parent);
     view->setScene(scene);
@@ -19,12 +20,12 @@ world::world(QWidget *parent)
     scene->setItemIndexMethod(QGraphicsScene::NoIndex);
 
     robot = new robotview;
-    robot->setPos(-100, -200);
+    robot->setPos(-270, -120);
     robot->update();
     scene->addItem(robot);
 
 
-    scene->addLine(robot->pos().rx(), robot->pos().ry(), robot->pos().rx() + cos(robot->angle*M_PI/180)*800   , robot->pos().ry() + sin(robot->angle*M_PI/180)*800      );
+    //scene->addLine(robot->pos().rx(), robot->pos().ry(), robot->pos().rx() + cos(robot->angle*M_PI/180)*800   , robot->pos().ry() + sin(robot->angle*M_PI/180)*800      );
     robot->w=this;
 
     newWall = new Wall(-300,0,600,-50,30,0.4);
@@ -32,16 +33,9 @@ world::world(QWidget *parent)
 
     true_coord();
     line2 = new QGraphicsLineItem(pp1.rx(),pp1.ry(),pp2.rx(),pp2.ry());
-    scene->addItem(line2);
+   // scene->addItem(line2);
 
     scene->addItem(newWall);
-/*
-    wall* w;
-    foreach (w, walls) {
-        scene->addItem(w);
-    }
-*/
-
     view->setRenderHint(QPainter::Antialiasing);
     view->setBackgroundBrush(QColor (170,170,170));
     view->setCacheMode(QGraphicsView::CacheBackground);
@@ -50,7 +44,7 @@ world::world(QWidget *parent)
     view->setWindowTitle(QT_TRANSLATE_NOOP(QGraphicsView, "Robots"));
     view->resize(800, 600);
     view->show();
-    startTimer(10);
+    startTimer(20);
 
 }
 
@@ -91,7 +85,7 @@ void world::timerEvent(QTimerEvent *)
     robot->updateWalls();
     robot->update();
     //robot->updateVelocity();
-    //robot->updateVelocity(mDelta);
+    robot->updateVelocity(mDelta);
 
 
 
