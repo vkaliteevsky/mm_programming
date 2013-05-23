@@ -18,8 +18,8 @@ SOURCES += main.cpp \
 
 HEADERS  += \
     view/robotview.h \
-    view/wall.h \
-    view/world.h
+    view/world.h \
+    view/wall.h
 
 FORMS    +=
 

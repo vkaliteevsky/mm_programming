@@ -4,10 +4,10 @@
 #include <QtWidgets/QGraphicsItem>
 #include <QPoint>
 
-class wall : public QGraphicsRectItem
+class Wall : public QGraphicsRectItem
 {
 public:
-    wall(qreal x,qreal y,qreal width,qreal heidth,qreal angle,qreal fric);
+    Wall(qreal x,qreal y,qreal width,qreal heidth,qreal angle,qreal fric);
 
     QRectF boundingRect() const;
     QPainterPath shape() const;
@@ -15,6 +15,7 @@ public:
 
 public:
     void setLines(QPointF p1, QPointF p2, QPointF p3, QPointF p4);
+    void true_coord2();
     qreal getX()
     {
         return x;
@@ -35,6 +36,12 @@ public:
     {
         return angle;
     }
+    qreal getFric()
+    {
+        return fric;
+    }
+    QList<QLineF> linesList;
+
 
 private:
     qreal x;
@@ -45,7 +52,7 @@ private:
     qreal fric;//friction coefficient
     QColor color;
 
-    QList<QLineF> linesList;
+
 
 };
 

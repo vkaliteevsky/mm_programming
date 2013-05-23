@@ -14,30 +14,38 @@ public:
     world(QWidget *parent = 0);
     // void run();
 
+        QGraphicsScene* scene;
+
+
 protected:
     void timerEvent(QTimerEvent *event);
     QPointF interPoint(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal y3, qreal x4, qreal y4);
 
 private:
-    void getRobotFromWall();
-    QList<wall*> walls;
+    QPointF getRobotFromWall();
+    QLineF interRobotLine();
+    void normalRobot(QPointF point, QLineF line);
+    qreal trueAngle(qreal angle);
+    QPointF normalPoint(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal y3);
     void turnAndMoveRobot(qreal nAngle_w, qreal V);
-    QGraphicsScene* scene;
+
     QGraphicsView* view;
-    wall* newWall;
+    Wall* newWall;
     robotview* robot;
     QGraphicsLineItem* line2;
 
-    bool mColl;
+    bool isRobotContact;
     bool stop;
 
     void true_coord();
-    void true_coord2();
+    void true_coord2(Wall &w);
     QPointF pp1;
     QPointF pp2;
     QPointF curPoint;
     qreal mDelta;
 
+    QLineF intLine;
+    QPointF intPoint;
 
 };
 
