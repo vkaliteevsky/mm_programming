@@ -10,7 +10,7 @@
 #include <math.h>
 
 robotview::robotview()
-    : angle(15), mass(100), size(40), V0(10), momentI(0.00000000000003),motorFactor(5)
+    : angle(20), mass(100), size(40), V0(10), momentI(0.00000000000003),motorFactor(5)
 {
     mV = QPointF(V0*cos(angle*M_PI/180), V0*sin(angle*M_PI/180));
     setRotation(angle);
@@ -133,6 +133,7 @@ void robotview::checkCollision(Wall& wall)
                     QMessageBox ms;
                     ms.setText("setNull");
                     ms.exec();
+                    mAngularVelocity = 0;
                     setWall(i, NULL);
                 }
             }
@@ -187,7 +188,7 @@ void robotview::updateVelocity(qreal dt){
 
             QGraphicsRectItem * ss = new QGraphicsRectItem(0, 150, 300, 200);
             ss->setBrush(QColor(121,121,9));
-            ( (world*)w)->scene->addItem(ss);
+           // ( (world*)w)->scene->addItem(ss);
             QGraphicsTextItem *text = new QGraphicsTextItem( "F_norm = " + toString(F_norm) + "\n" +
                                                              "F_fr = " + toString(F_fr) + "\n" +
                                                              "F_engine = " + toString(F_engine) + "\n" +
@@ -200,7 +201,7 @@ void robotview::updateVelocity(qreal dt){
 
             text->setPos(0, 150);
             text->setFont(QFont ("Courier", 10));
-            ( (world*)w)->scene->addItem(text);
+           // ( (world*)w)->scene->addItem(text);
 
             // //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -242,8 +243,8 @@ void robotview::getRobotFromWall(Wall& wall, int index)
     QPointF p = mP[index];
     QLineF border = interRobotLine(wall);
     QLineF revDirection(p, QPointF(p.rx() - 5*cos(angle*M_PI/180), p.ry()-5*sin(angle*M_PI/180)));
-    QPointF pntIntersect = interPoint(border.x1(), border.y1(), border.x2(), border.y2(), revDirection.x1(), revDirection.y1(), revDirection.x2(), revDirection.y2());
-
+    //QPointF pntIntersect = interPoint(border.x1(), border.y1(), border.x2(), border.y2(), revDirection.x1(), revDirection.y1(), revDirection.x2(), revDirection.y2());
+    QPointF pntIntersect = normalPoint(border.x1(), border.y1(), border.x2(), border.y2(), p.rx(), p.ry());
     if (!((pntIntersect.rx() == NAN) || (pntIntersect.ry()==NAN))){
    //     setPos(this->pos().rx()+ pntIntersect.rx() - p.rx()
      //           , this->pos().ry() + pntIntersect.ry() - p.ry());
