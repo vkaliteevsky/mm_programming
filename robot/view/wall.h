@@ -11,9 +11,11 @@ public:
 
     QRectF boundingRect() const;
     QPainterPath shape() const;
+    bool contain(QPointF point);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 public:
+    bool isNotNear(QPointF point);
     void setLines(QPointF p1, QPointF p2, QPointF p3, QPointF p4);
     void true_coord2();
     qreal getX()
@@ -41,6 +43,7 @@ public:
         return fric;
     }
     QList<QLineF> linesList;
+    QPointF p1, p2, p3, p4;
 
 
 private:
@@ -51,6 +54,7 @@ private:
     qreal angle;
     qreal fric;//friction coefficient
     QColor color;
+        void* w;
 
 
 

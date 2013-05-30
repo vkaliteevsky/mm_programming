@@ -31,11 +31,13 @@ public:
     void getRobotFromWall(Wall& wall, int index);
     QPointF interPoint(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal y3, qreal x4, qreal y4);
     QLineF interRobotLine(Wall& wall);
+    QLineF nearRobotLine(Wall& wall, QPointF p);
     QPointF normalPoint(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal y3);
     qreal length(QPointF vector);
     qreal scalarProduct(QPointF vector1, QPointF vector2);
     qreal vectorProduct(QPointF vector1, QPointF vector2);
     QPointF normalize(QPointF vector);
+    bool isParallel(QLineF l1, QLineF l2);
     void* w;
 
 public:
