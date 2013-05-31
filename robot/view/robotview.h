@@ -46,7 +46,7 @@ public:
 
     Wall* mWalls[4];
 
-    void update();
+    void updateCoord();
     //private:
 
 
