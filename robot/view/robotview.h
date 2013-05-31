@@ -25,6 +25,7 @@ public:
     void updateWalls();
     void updateVelocity(qreal dt);
     void updateAngle();
+    void updateCoord();
     QPointF mul(QPointF vector, qreal scalar);
     QString toString(QPointF point);
 
