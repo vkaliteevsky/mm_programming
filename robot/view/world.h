@@ -27,8 +27,6 @@ private:
     QList<Wall*> walls;
     robotview* robot;
     qreal mDelta;
-
-
 };
 
 #endif // WORLD_H
