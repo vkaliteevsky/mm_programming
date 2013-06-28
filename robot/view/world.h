@@ -24,8 +24,8 @@ protected:
 
 private:
     QGraphicsView* view;
-    Wall* newWall;
-    Wall* walls[10];
+    QList<Wall*> walls;
+
     robotview* robot;
     QGraphicsLineItem* line2;
 

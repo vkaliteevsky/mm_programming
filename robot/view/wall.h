@@ -8,7 +8,7 @@
 class Wall : public QGraphicsRectItem
 {
 public:
-    Wall(qreal x,qreal y,qreal width,qreal heidth,qreal angle,qreal fric);
+    Wall(qreal x, qreal y, qreal width, qreal height, qreal angle, qreal fric);
 
     QRectF boundingRect() const;
     QPainterPath shape() const;
@@ -17,49 +17,52 @@ public:
     void* r;
 
 public:
-    bool isNotNear(QPointF point);
     void setLines(QPointF p1, QPointF p2, QPointF p3, QPointF p4);
-    void true_coord2();
+    void trueCoord();
     qreal getX()
     {
-        return x;
+        return mX;
     }
     qreal getY()
     {
-        return y;
+        return mY;
     }
     qreal getWidth()
     {
-        return width;
+        return mWidth;
     }
     qreal getHeight()
     {
-        return height;
+        return mHeight;
     }
     qreal getAngle()
     {
-        return angle;
+        return mAngle;
     }
     qreal getFric()
     {
-        return fric;
+        return mFric;
     }
-    QList<QLineF> linesList;
-    QPointF mP[4];
+    QPointF getPoint(int i)
+    {
+        return mP[i];
+    }
+    QLineF getLine(int i)
+    {
+        return linesList.at(i);
+    }
 
 
 private:
-    qreal x;
-    qreal y;
-    qreal width;
-    qreal height;
-    qreal angle;
-    qreal fric;//friction coefficient
-    QColor color;
-        void* w;
-
-
-
+    QList<QLineF> linesList;
+    QPointF mP[4];
+    qreal mX;
+    qreal mY;
+    qreal mWidth;
+    qreal mHeight;
+    qreal mAngle;
+    qreal mFric;//friction coefficient
+    QColor mColor;
 };
 
 #endif // WALL_H

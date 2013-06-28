@@ -1,7 +1,6 @@
 #ifndef ROBOTVIEW_H
 #define ROBOTVIEW_H
 
-//#include "view/world.h"
 #include "view/wall.h"
 #include <QtWidgets/QGraphicsItem>
 #include <QVector2D>
@@ -9,13 +8,11 @@
 
 class robotview : public QGraphicsRectItem
 {
-    // Q_OBJECT
 public:
     robotview();
 
     QRectF boundingRect() const;
     QPainterPath shape() const;
-    //    QPainterPath shape() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget);
     void setAngle(qreal nangle);
@@ -50,9 +47,7 @@ public:
     QPointF mPos;
     void* w;
 
-public:
-    int mCounter = 0;
-
+    //QList<Wall*> mWalls;
     Wall* mWalls[4];
     Wall* mEdgeWalls[4];
 
@@ -79,10 +74,12 @@ public:
     qreal mForseMoment;
 
     QList<QPointF> mEdP;
-    QPointF mEdgeP;
 
     QPointF mP[4];
     QLineF mL[4];
+
+private:
+
 
 };
 #endif // ROBOTVIEW_H

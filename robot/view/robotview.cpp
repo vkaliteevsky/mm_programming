@@ -14,8 +14,6 @@
 robotview::robotview()
     : angle(330), mass(100), size(40), V0(10), momentI(200), motorFactor(70),mAngularVelocity(0)
 {
-    QPointF q (0.01*V0*cos(angle*M_PI/180), 0.01*V0*sin(angle*M_PI/180));
-    (q);
     setRotation(angle);
     for (int i =0; i<4; i++){
         setWall (i, NULL);
@@ -45,12 +43,6 @@ void robotview::setV(QPointF& V)
     {
         qreal x = V0/length(V);
         V *= x;
-        mV += 0. * mV;
-    }
-
-    if(V.ry() > 0.)
-    {
-        mV += 0. * mV;
     }
     mV = V;
 }
@@ -63,23 +55,13 @@ QPointF robotview::getV()const
 void robotview::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     painter->setBrush(QColor(0,0,0));
-
-
-
     setRotation(angle);
-
-
     painter->setBrush(QColor(90,90,90));
     painter->drawRect(-20,-20,40,40);
-
-
-
     painter->save();
 
     qreal arrowWidth = 10;
     qreal arrowHeight = 10;
-
-
 
     QPolygon arrow;
     arrow << QPoint(0, -arrowWidth/2)
@@ -103,41 +85,6 @@ void robotview::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
     painter->rotate(180/M_PI * arangle );
     painter->drawConvexPolygon(arrow);
     painter->restore();
-
-    QFont font;
-
-    painter->setFont(font);
-    if (!(this->mWalls[0] == NULL)){
-            painter->drawText(QRect(10,-25,20,20),"+");
-    } else {
-            painter->drawText(QRect(15,-25,20,20),"-");
-    }
-    if (!(this->mWalls[1] == NULL)){
-            painter->drawText(QRect(10,5,20,20),"+");
-    } else {
-            painter->drawText(QRect(15,5,20,20),"-");
-    }
-    if (!(this->mWalls[2] == NULL)){
-            painter->drawText(QRect(-20,5,20,20),"+");
-    } else {
-            painter->drawText(QRect(-20,5,20,20),"-");
-    }
-    if (!(this->mWalls[3] == NULL)){
-            painter->drawText(QRect(-20,-25,20,20),"+");
-    } else {
-            painter->drawText(QRect(-20,-25,20,20),"-");
-    }
-    font.setPointSize(8);
-
-
-
-
-
-
-   painter->drawText(QRect(0,0,25,25),QString::number(length(mV)));
-
-
-
 }
 
 void robotview::updateAngle()
@@ -171,13 +118,9 @@ void robotview::updateCoord()
 
 void robotview::nextStep(qreal dt)
 {
-    //QPointF V = getV();
-    //QPointF V1 = V + mForce / mass * dt;
-    //setV(V1);
+
     mPos = pos();
     setPos( mPos += getV()*dt);
-    QPointF pos1 = pos();
-    mPos = pos();
     angle += mAngularVelocity*dt;
     updateCoord();
 }
@@ -205,61 +148,39 @@ void robotview::checkCollision(Wall& wall)
                     QPointF normPoint = normalPoint(border.x1(), border.y1(), border.x2(), border.y2(), mP[i].rx(), mP[i].ry());
                     QPointF n (-normPoint + mP[i]);
                     n = normalize(n);
-                    if (!(length(n) < 1.e-10)){
+                    if (!(length(n) < 1.e-10)) {
                         QPointF V = getV();
                         qreal k = scalarProduct(V, n);
                         QPointF V1 (V - n * k);
                         setV(V1);
                     }
                 }
-                //
-
-                    if (i == 1) {
-                        mV += 0. * mV;
-                    }
-                    setWall(i, &wall);
-                //}
+                if (i == 1) {
+                    mV += 0. * mV;
+                }
+                setWall(i, &wall);
             } else {
-                //if ((i == 2) || (i == 3)){
-                //     setWall(i, NULL);
-                //}
                 if (mWalls[i] == &wall){
                     setWall(i, NULL);
                 }
-            }
-
-
-
-
-           // QPointF p = mapFromScene(wall.mP[i]);
-            // //QPointF p = (mP[i]);
-             //p = ((wall.mP[i]));
-
-            //if (contains(p)){
-                //p = mapToScene(p);
-
-
-
-            QPointF p = mapFromScene(wall.mP[i]);
-            if (contains(p)) {
-                p = mapToScene(p);
-                QLineF border = interWallLine(wall);
-                QPointF normPoint = normalPoint(border.x1(), border.y1(), border.x2(), border.y2(), p.rx(), p.ry());
-                QPointF n (-normPoint + p);
-                n = normalize(n);
-                QPointF V1 (0,0);
-                setV(V1);
-                mEdP.push_back(p);
-                mEdgeP = p;
-                mAngularVelocity=0;
-                //setEdgeWall(i, &wall);
-            } else {
-                if (mEdgeWalls[i] == &wall){
-                    setEdgeWall(i, NULL);
+                QPointF p = mapFromScene(wall.getPoint(i));
+                if (contains(p)) {
+                    p = mapToScene(p);
+                    QLineF border = interWallLine(wall);
+                    QPointF normPoint = normalPoint(border.x1(), border.y1(), border.x2(), border.y2(), p.rx(), p.ry());
+                    QPointF n (-normPoint + p);
+                    n = normalize(n);
+                    QPointF V1 (0,0);
+                    setV(V1);
+                    mEdP.push_back(p);
+                    mAngularVelocity=0;
+                } else {
+                    if (mEdgeWalls[i] == &wall){
+                        setEdgeWall(i, NULL);
+                    }
                 }
+
             }
-
-
         }
     } else {
         for (int i = 0; i < 4; i++) {
@@ -267,17 +188,15 @@ void robotview::checkCollision(Wall& wall)
             if (mWalls[i] == &wall) {
                 mWalls[i] = NULL;
                 mAngularVelocity = 0;
-                qreal k = length( getV() );
-                //setV(QPointF(cos(angle*M_PI/180)*k, sin(angle*M_PI/180)*k));
             }
         }
     }
+
 }
 
 
 void robotview::updateWalls()
 {
-
     for (int i = 0; i < 4; i++){
         if (mWalls[i] != NULL){
             getRobotFromWall(*(mWalls[i]),i);
@@ -285,11 +204,6 @@ void robotview::updateWalls()
         if (mEdgeWalls[i] != NULL){
             getEdgeRobotFromWall(*(mEdgeWalls[i]),i);
         }
-        //for (int j = 0; j < 3; j++) {
-        //    if (isCollision(mWalls[i], j)) {
-        //        getRobotFromWall(*(mWalls[i]),j);
-        //    }
-        //}
     }
 }
 
@@ -308,31 +222,20 @@ bool robotview::isEdgeCollision(Wall& wall, int i)
 }
 
 void robotview::updateVelocity(qreal dt) {
-    //qreal kk = 700;
+
     mForce *= 0;
     mForseMoment = 0;
 
     qreal kk = length(getV())*150;
     qreal angularVelocityFric = fabs(mAngularVelocity*100);
 
-    //qreal angularVelocityFric = 250;
-
     QPointF napr (cos(angle * M_PI / 180), sin (angle * M_PI / 180));
-
-
     qreal scalProd = scalarProduct(getV(), napr);
-    QPointF vec = mul(napr, fabs(scalProd));
-
-
     qreal tmp2 = ( V0 - scalProd) * motorFactor;
     QPointF F_engine = mul (napr  ,tmp2);
     QPointF p0 = pos();
     mForce = F_engine;
 
-
-    if (mCounter == 1434) {
-        mV += 0. * mV;
-    }
     for (int i = 0; i < 4; i++){
         if (mEdgeWalls[i] != NULL){
             for (int j = 0; j < mEdP.length(); j++) {
@@ -351,16 +254,14 @@ void robotview::updateVelocity(qreal dt) {
         if (mWalls[i] != NULL){
 
             QPointF tmp(mP[i] - p0);
-            //QPointF tmp2(mP[i].rx() - napr.rx(), mP[i].ry() - napr.ry());
 
             QLineF bord = nearRobotLine(*mWalls[i], mP[i]);
             qreal ang = bord.angle();
-            QPointF vectorParalStene (cos(ang*M_PI/180),-sin(ang*M_PI/180));//знаки
-            //QPointF vectorParalStene (sin(ang*M_PI/180), -cos(ang*M_PI/180));//знаки
+            QPointF vectorParalStene (cos(ang*M_PI/180),-sin(ang*M_PI/180));
 
-            if (scalarProduct(vectorParalStene, napr) < 0) vectorParalStene *= (-1);
-
-
+            if (scalarProduct(vectorParalStene, napr) < 0) {
+                vectorParalStene *= (-1);
+            }
             vectorParalStene = normalize(vectorParalStene);
 
             QPointF F_norm = mForce;
@@ -376,16 +277,8 @@ void robotview::updateVelocity(qreal dt) {
             F_fr_wall = vectorParalStene;
             F_fr_wall *= length(F_norm) * mWalls[i]->getFric();
 
-
-
-
-
             mForce += F_norm;
             mForce += F_fr_wall;
-
-
-
-
 
             qreal a = vectorProduct(F_fr_wall, tmp);
             qreal b = vectorProduct(F_norm , tmp);
@@ -397,25 +290,10 @@ void robotview::updateVelocity(qreal dt) {
         }
     }
 
-
-    if (mForseMoment != 0) {
-        QMessageBox msb;
-        msb.setText("error");
-
-
-
-    }
     QPointF V = getV();
     QPointF V1 = V + mForce / mass * dt;
     setV(V1);
 
-   /* qreal tmp3 = scalarProduct(mV, F_fric);
-    if (tmp3 > 0){
-        QPointF vec = normalize(mV);
-        vec = mul(vec, tmp3);
-
-        mV -= vec;
-    }*/
 
     mAngularVelocity += mForseMoment /  momentI * dt;
 
@@ -462,7 +340,7 @@ void robotview::updateVelocity(qreal dt) {
     }  else {
         setV(mVtmp);
     }
-     V = getV();
+    V = getV();
     if ( length(V) > V0){
         V1 = normalize(V) * V0;
         setV(V1);
@@ -512,109 +390,65 @@ void robotview::getRobotFromWall(Wall& wall, int index)
 }
 
 void robotview::getEdgeRobotFromWall(Wall& wall, int index)
-{
-
-   // QPointF new_p = wall.mapFromScene(mP[i]);
-   // if (wall.contains(new_p)) {}
-
-
+{    
     if ((collidesWithItem(&wall))){
         QLineF l = mL[index];
-
-        wall.mP[0];
         for (int i = 0; i<4; i++)
         {
-            QPointF p = mapFromScene(wall.mP[i]);
-            //QPointF p = (mP[i]);
-             //p = ((wall.mP[i]));
-
+            QPointF p = mapFromScene(wall.getPoint(i));
             if (contains(p)){
                 p = mapToScene(p);
                 QPointF pntIntersect = normalPoint(l.x1(), l.y1(), l.x2(), l.y2(), p.rx(), p.ry());
                 QPointF k (p.rx() - pntIntersect.rx(),p.ry() - pntIntersect.ry());
-                qreal op = length(k);
                 QPointF poss = pos();
                 setPos(poss+=k);
                 mPos = pos();
                 updateCoord();
-
             }
-
-
         }
-
-
-
     }
-       /* QPointF p = mP[index];
-        QLineF border = nearRobotLine(wall, p);
-        QPointF pntIntersect = normalPoint(border.x1(), border.y1(), border.x2(), border.y2(), p.rx(), p.ry());
-        if (!((pntIntersect.rx() == NAN) || (pntIntersect.ry() == NAN))){
-            QPointF k;
-            k = pntIntersect -= p;
-            QPointF poss = pos();
-            //k+=QPointF (0.0000001, 0.0000001);
-            setPos(poss+=k);
-            mPos = pos();
-            updateCoord();
-        } else {
-            QMessageBox n;
-            n.setText("Error.");
-            n.exec();
-        }*/
-
 }
 
 QLineF robotview::interRobotLine(Wall& wall)
 {
-    QLineF linne;
+    QLineF tmpLine;
     QGraphicsLineItem *l = new QGraphicsLineItem(0,0,0,0);
     for(int i = 0; i<4; i++)
     {
-        l->setLine(wall.linesList.at(i));
+        l->setLine(wall.getLine(i));
         if (collidesWithItem(l)){
-            linne = l->line();
+            tmpLine = l->line();
         }
     }
-
-    return linne;
+    return tmpLine;
 }
 
 QLineF robotview::interWallLine(Wall& wall)
 {
-    QLineF linne;
+    QLineF tmpLine;
     QGraphicsLineItem *l = new QGraphicsLineItem(0,0,0,0);
     for(int i = 0; i<4; i++)
     {
         l->setLine(mL[i]);
         if (wall.collidesWithItem(l)){
-            linne = l->line();
+            tmpLine = l->line();
             setEdgeWall(i, &wall);
         }
     }
-
-    return linne;
+    return tmpLine;
 }
 
 QLineF robotview::nearRobotLine(Wall& wall, QPointF p)
 {
     QList<qreal> len;
-
-
     qreal min=0;
     for(int i = 0; i<4; i++)
     {
         QLineF l;
-        l= wall.linesList.at(i);
-
+        l= wall.getLine(i);
         QPointF normPoint = normalPoint(l.x1(), l.y1(), l.x2(), l.y2(), p.rx(),p.ry());
         QLineF k (p.rx(), p.ry(), normPoint.rx(),normPoint.ry());
         len.push_back( k.length());
-
-        QMessageBox d2;
-        d2.setText(QString::number(k.length()));
-        // d2.exec();
-
         if (min == 0){
             min = k.length();
         }
@@ -623,8 +457,7 @@ QLineF robotview::nearRobotLine(Wall& wall, QPointF p)
         }
     }
     int j = len.indexOf(min);
-    return wall.linesList.at(j);
-
+    return wall.getLine(j);
 }
 
 QPointF robotview::interPoint(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal y3, qreal x4, qreal y4)
