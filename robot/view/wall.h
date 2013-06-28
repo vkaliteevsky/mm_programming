@@ -4,6 +4,7 @@
 #include <QtWidgets/QGraphicsItem>
 #include <QPoint>
 
+
 class Wall : public QGraphicsRectItem
 {
 public:
@@ -13,6 +14,7 @@ public:
     QPainterPath shape() const;
     bool contain(QPointF point);
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
+    void* r;
 
 public:
     bool isNotNear(QPointF point);
@@ -43,7 +45,7 @@ public:
         return fric;
     }
     QList<QLineF> linesList;
-    QPointF p1, p2, p3, p4;
+    QPointF mP[4];
 
 
 private:

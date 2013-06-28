@@ -12,7 +12,8 @@ class world : public QWidget
     Q_OBJECT
 public:
     world(QWidget *parent = 0);
-    // void run();
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
+               QWidget *widget);
 
         QGraphicsScene* scene;
 
