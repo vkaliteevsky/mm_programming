@@ -26,29 +26,27 @@ public:
     void updateVelocity(qreal dt);
     void updateAngle();
     void updateCoord();
-    QPointF mul(QPointF vector, qreal scalar);
-    QString toString(QPointF point);
+    QVector2D mul(QVector2D vector, qreal scalar);
+
 
     void getRobotFromWall(Wall& wall, int index);
     void getEdgeRobotFromWall(Wall& wall, int index);
 
-    QPointF interPoint(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal y3, qreal x4, qreal y4);
     QLineF interRobotLine(Wall& wall);
     QLineF interWallLine(Wall& wall);
     QLineF nearRobotLine(Wall& wall, QPointF p);
     QPointF normalPoint(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal y3);
     qreal length(QPointF vector);
-    qreal scalarProduct(QPointF vector1, QPointF vector2);
-    qreal vectorProduct(QPointF vector1, QPointF vector2);
-    QPointF normalize(QPointF vector);
+    qreal scalarProduct(QVector2D vector1, QVector2D vector2);
+    qreal vectorProduct(QVector2D vector1, QVector2D vector2);
     bool isParallel(QLineF l1, QLineF l2);
-    void setV(QPointF& V);
-    QPointF getV()const;
+    void setV(QVector2D &V);
+    QVector2D getV() const;
     void update();
-    QPointF mPos;
 
-    Wall* mWalls[4];
-    Wall* mEdgeWalls[4];
+
+    Wall* mWalls[4]; // Массив вершин, хранящих указатели на стены
+    Wall* mEdgeWalls[4]; // Массив ребер, хранящих указатели на стены
 
     qreal getAngle()
     {
@@ -78,7 +76,7 @@ public:
     {
         return mAngularVelocity;
     }
-    QPointF getForce()
+    QVector2D getForce()
     {
         return mForce;
     }
@@ -86,7 +84,7 @@ public:
     {
         return mForceMoment;
     }
-    void setForce(QPointF force)
+    void setForce(QVector2D force)
     {
         mForce = force;
     }
@@ -95,14 +93,14 @@ public:
         mForceMoment = forceMoment;
     }
 
-    QList<QPointF> mEdP;
-    QPointF mP[4];
-    QLineF mL[4];
+    QList<QPointF> mEdP; // Массив вершин(стен), которые попали внутрь робота
+    QPointF mP[4]; // Массив вершин робота
+    QLineF mL[4]; // Массив ребер робота
 
 private:
-    QPointF mForce;//vector
+    QVector2D mForce;//vector
     qreal mForceMoment;
-    QPointF mV; //velocity vector
+    QVector2D mV; //velocity vector
     qreal mAngle;
     qreal mMass;
     qreal mSize;

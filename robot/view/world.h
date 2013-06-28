@@ -26,7 +26,6 @@ private:
     QGraphicsView* view;
     QList<Wall*> walls;
     robotview* robot;
-    QPointF curPoint;
     qreal mDelta;
 
 

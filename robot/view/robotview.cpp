@@ -37,18 +37,18 @@ QPainterPath robotview::shape() const
 }
 
 
-void robotview::setV(QPointF& V)
+void robotview::setV(QVector2D& V)
 {
     qreal V0 = getFullSpeed();
-    if(length(V) > V0)
+    if(V.length() > V0)
     {
-        qreal x = V0/length(V);
+        qreal x = V0/V.length();
         V *= x;
     }
     mV = V;
 }
 
-QPointF robotview::getV()const
+QVector2D robotview::getV()const
 {
     return mV;
 }
@@ -88,14 +88,7 @@ void robotview::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
     painter->restore();
 }
 
-void robotview::updateAngle()
-{
-    QPointF V = getV();
-    mAngle = 180 * atan2(V.ry(), V.rx())/M_PI;
-    setRotation(mAngle);
-}
-
-void robotview::updateCoord()
+void robotview::updateCoord() // Обновляет координаты вершин
 {
     double x = pos().rx();
     double y = pos().ry();
@@ -117,47 +110,37 @@ void robotview::updateCoord()
 
 }
 
-void robotview::nextStep(qreal dt)
+void robotview::nextStep(qreal dt) // Делает шаг и меняет угол
 {
 
-    mPos = pos();
-    setPos( mPos += getV()*dt);
+    QVector2D curPos (pos());
+    curPos += getV()*dt;
+    setPos(curPos.x(), curPos.y());
     mAngle += mAngularVelocity*dt;
     updateCoord();
 }
 
-void robotview::checkCollision(Wall& wall)
+void robotview::checkCollision(Wall& wall) // Проверяет коллизии
 {
-
-
     mEdP.clear();
     if(collidesWithItem(&wall)) {
         for(int i = 0; i <4; i++)
         {
             QPointF new_p = wall.mapFromScene(mP[i]);
             if (wall.contains(new_p)) {
-
-
-
-                if (i == 1) {
-                    mV += 0. * mV;
-                }
-
                 if(mWalls[i]== NULL) {
                     //Vnormal = 0
                     QLineF border = interRobotLine(wall);
                     QPointF normPoint = normalPoint(border.x1(), border.y1(), border.x2(), border.y2(), mP[i].rx(), mP[i].ry());
-                    QPointF n (-normPoint + mP[i]);
-                    n = normalize(n);
-                    if (!(length(n) < 1.e-10)) {
-                        QPointF V = getV();
+
+                    QVector2D n (-normPoint.rx() + mP[i].rx(), -normPoint.ry() + mP[i].ry());
+                    n = n.normalized();
+                    if (!(n.length() < 1.e-10)) {
+                        QVector2D V = getV();
                         qreal k = scalarProduct(V, n);
-                        QPointF V1 (V - n * k);
+                        QVector2D V1 (V - n * k);
                         setV(V1);
                     }
-                }
-                if (i == 1) {
-                    mV += 0. * mV;
                 }
                 setWall(i, &wall);
             } else {
@@ -169,9 +152,9 @@ void robotview::checkCollision(Wall& wall)
                     p = mapToScene(p);
                     QLineF border = interWallLine(wall);
                     QPointF normPoint = normalPoint(border.x1(), border.y1(), border.x2(), border.y2(), p.rx(), p.ry());
-                    QPointF n (-normPoint + p);
-                    n = normalize(n);
-                    QPointF V1 (0,0);
+                    QVector2D n (-normPoint.rx() + p.rx(), -normPoint.ry() + p.ry());
+                    n = n.normalized();
+                    QVector2D V1 (0,0);
                     setV(V1);
                     mEdP.push_back(p);
                     mAngularVelocity=0;
@@ -196,7 +179,7 @@ void robotview::checkCollision(Wall& wall)
 }
 
 
-void robotview::updateWalls()
+void robotview::updateWalls() // Вытаскивает из стен
 {
     for (int i = 0; i < 4; i++){
         if (mWalls[i] != NULL){
@@ -209,40 +192,40 @@ void robotview::updateWalls()
 }
 
 
-bool robotview::isCollision(Wall& wall, int i)
+bool robotview::isCollision(Wall& wall, int i) // Проверяет коллизию поиском вершины робота в стене
 {
     QPointF new_p = wall.mapFromScene(mP[i]);
     return (wall.contains(new_p));
 }
 
-bool robotview::isEdgeCollision(Wall& wall, int i)
+bool robotview::isEdgeCollision(Wall& wall, int i) // Проверяет наличие пересечения ребра робота со стеной
 {
     QPainterPath path (mL[i].p1() );
     path.lineTo(mL[i].p2());
     return (wall.collidesWithPath(path));
 }
 
-void robotview::updateVelocity(qreal dt) {
+void robotview::updateVelocity(qreal dt) { // Высчитывает изменение скорости и угла
 
-    setForce(QPointF(0,0));
+    setForce(QVector2D(0,0));
     setForceMoment(0);
 
-    qreal rotationalFricFactor = length(getV())*150;
+    qreal rotationalFricFactor = getV().length()*150;
     qreal angularVelocityFricFactor = fabs(mAngularVelocity*100);
 
-    QPointF napr (cos(mAngle * M_PI / 180), sin (mAngle * M_PI / 180));
+    QVector2D napr (cos(mAngle * M_PI / 180), sin (mAngle * M_PI / 180));
     qreal scalProd = scalarProduct(getV(), napr);
     qreal V0 = getFullSpeed();
     qreal tmp2 = ( V0 - scalProd) * mMotorFactor;
-    QPointF F_engine = mul (napr  ,tmp2);
+    QVector2D F_engine = mul(napr,tmp2);
     QPointF p0 = pos();
     mForce = F_engine;
 
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < 4; i++) { // Если врезались в угол стены
         if (mEdgeWalls[i] != NULL){
             for (int j = 0; j < mEdP.length(); j++) {
-                QPointF tmp(mEdP.at(j) - p0);
-                QPointF F_norm = mForce;
+                QVector2D tmp(mEdP.at(j) - p0);
+                QVector2D F_norm = mForce;
                 F_norm *= -1;
                 qreal a = vectorProduct(F_norm, tmp);
                 mForceMoment -= a;
@@ -252,32 +235,32 @@ void robotview::updateVelocity(qreal dt) {
 
 
 
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < 4; i++) { // Если врезались в ребро стены
         if (mWalls[i] != NULL){
 
-            QPointF tmp(mP[i] - p0);
+            QVector2D tmp(mP[i] - p0);
 
             QLineF bord = nearRobotLine(*mWalls[i], mP[i]);
             qreal ang = bord.angle();
-            QPointF vectorParalStene (cos(ang*M_PI/180),-sin(ang*M_PI/180));
+            QVector2D vectorParalStene (cos(ang*M_PI/180),-sin(ang*M_PI/180));
 
             if (scalarProduct(vectorParalStene, napr) < 0) {
                 vectorParalStene *= (-1);
             }
-            vectorParalStene = normalize(vectorParalStene);
+            vectorParalStene = vectorParalStene.normalized();
 
-            QPointF F_norm = mForce;
+            QVector2D F_norm = mForce;
 
             double sc1 = scalarProduct(mForce, vectorParalStene);
             F_norm -= mul(vectorParalStene, sc1);
 
             F_norm *= -1;
-            QPointF F_fr_wall;
+            QVector2D F_fr_wall;
 
             vectorParalStene *= -1;
 
             F_fr_wall = vectorParalStene;
-            F_fr_wall *= length(F_norm) * mWalls[i]->getFric();
+            F_fr_wall *= F_norm.length() * mWalls[i]->getFric();
 
             mForce += F_norm;
             mForce += F_fr_wall;
@@ -292,13 +275,14 @@ void robotview::updateVelocity(qreal dt) {
         }
     }
 
-    QPointF V = getV();
-    QPointF V1 = V + mForce / mMass * dt;
+    QVector2D V = getV();
+    QVector2D V1 = V + mForce / mMass * dt;
     setV(V1);
 
     qreal momentI = getInertiaMoment();
     mAngularVelocity += mForceMoment /  momentI * dt;
 
+        // Далее анализируем трение поворота и момент трения поворота
     qreal tmpAngVel = mAngularVelocity;
     if (mAngularVelocity > 0) {
         mAngularVelocity -= angularVelocityFricFactor / momentI * dt;
@@ -310,13 +294,13 @@ void robotview::updateVelocity(qreal dt) {
     }
 
 
-    QPointF rotationalFrictionF = QPointF(-napr.ry(), napr.rx());
+    QVector2D rotationalFrictionF (-napr.y(), napr.x());
 
-    rotationalFrictionF = normalize(rotationalFrictionF);
+    rotationalFrictionF = rotationalFrictionF.normalized();
 
-    QPointF tmpV = getV();
-    if (length(tmpV) != 0) {
-        tmpV = normalize(tmpV);
+    QVector2D tmpV = getV();
+    if (tmpV.length() != 0) {
+        tmpV = tmpV.normalized();
     }
     qreal sinus = vectorProduct(tmpV, rotationalFrictionF);
 
@@ -327,7 +311,7 @@ void robotview::updateVelocity(qreal dt) {
         rotationalFrictionF = -rotationalFrictionF;
     }
 
-    QPointF newV = V + rotationalFrictionF / mMass * dt;
+    QVector2D newV = V + rotationalFrictionF / mMass * dt;
     qreal sc_1 = scalarProduct(newV, rotationalFrictionF);
     if (sc_1 > 0) {
         qreal sc_2 = -scalarProduct(V, rotationalFrictionF);
@@ -337,62 +321,45 @@ void robotview::updateVelocity(qreal dt) {
             msb.exec();
         }
         qreal dt_tmp = dt *sc_2/(sc_2 + sc_1);
-        QPointF V1 = V + rotationalFrictionF / mMass * dt_tmp;
+        QVector2D V1 = V + rotationalFrictionF / mMass * dt_tmp;
         setV(V1);
 
     }  else {
         setV(newV);
     }
     V = getV();
-    if ( length(V) > V0){
-        newV = normalize(V) * V0;
+    if ( V.length() > V0){
+        newV = V.normalized() * V0;
         setV(newV);
     }
 }
 
 
-qreal robotview::vectorProduct(QPointF vector1, QPointF vector2)
+qreal robotview::vectorProduct(QVector2D vector1, QVector2D vector2)
 {
-    return  vector1.rx()*vector2.ry() - vector1.ry()*vector2.rx();
+    return  vector1.x()*vector2.y() - vector1.y()*vector2.x();
 }
 
-QPointF robotview::normalize(QPointF vector)
+qreal robotview::scalarProduct(QVector2D vector1, QVector2D vector2)
 {
-    return QPointF(vector.rx()/length(vector) , vector.ry()/length(vector));
+    return vector1.x()*vector2.x() + vector1.y()*vector2.y();
 }
 
-qreal robotview::length(QPointF vector)
-{
-    return sqrt(vector.rx()*vector.rx() + vector.ry()*vector.ry());
-}
-
-qreal robotview::scalarProduct(QPointF vector1, QPointF vector2)
-{
-    return vector1.rx()*vector2.rx() + vector1.ry()*vector2.ry();
-}
-
-void robotview::getRobotFromWall(Wall& wall, int index)
+void robotview::getRobotFromWall(Wall& wall, int index) // Вытаскивает из стены по заданной вершине робота
 {
     if ((collidesWithItem(&wall))){
         QPointF p = mP[index];
         QLineF border = nearRobotLine(wall, p);
         QPointF pntIntersect = normalPoint(border.x1(), border.y1(), border.x2(), border.y2(), p.rx(), p.ry());
-        if (!((pntIntersect.rx() == NAN) || (pntIntersect.ry() == NAN))){
-            QPointF k;
-            k = pntIntersect -= p;
-            QPointF poss = pos();
-            setPos(poss+=k);
-            mPos = pos();
-            updateCoord();
-        } else {
-            QMessageBox n;
-            n.setText("Error.");
-            n.exec();
-        }
+        QPointF k;
+        k = pntIntersect -= p;
+        QPointF curPos = pos();
+        setPos(curPos+=k);
+        updateCoord();
     }
 }
 
-void robotview::getEdgeRobotFromWall(Wall& wall, int index)
+void robotview::getEdgeRobotFromWall(Wall& wall, int index) // Вытаскивает из стены по заданному ребру робота
 {    
     if ((collidesWithItem(&wall))){
         QLineF l = mL[index];
@@ -403,16 +370,15 @@ void robotview::getEdgeRobotFromWall(Wall& wall, int index)
                 p = mapToScene(p);
                 QPointF pntIntersect = normalPoint(l.x1(), l.y1(), l.x2(), l.y2(), p.rx(), p.ry());
                 QPointF k (p.rx() - pntIntersect.rx(),p.ry() - pntIntersect.ry());
-                QPointF poss = pos();
-                setPos(poss+=k);
-                mPos = pos();
+                QPointF curPos = pos();
+                setPos(curPos+=k);
                 updateCoord();
             }
         }
     }
 }
 
-QLineF robotview::interRobotLine(Wall& wall)
+QLineF robotview::interRobotLine(Wall& wall) // Возвращает ребро стены, в которое въехал робот
 {
     QLineF tmpLine;
     QGraphicsLineItem *l = new QGraphicsLineItem(0,0,0,0);
@@ -426,7 +392,7 @@ QLineF robotview::interRobotLine(Wall& wall)
     return tmpLine;
 }
 
-QLineF robotview::interWallLine(Wall& wall)
+QLineF robotview::interWallLine(Wall& wall) // Возвращает ребро робота, которым робот въехал в стену
 {
     QLineF tmpLine;
     QGraphicsLineItem *l = new QGraphicsLineItem(0,0,0,0);
@@ -441,7 +407,7 @@ QLineF robotview::interWallLine(Wall& wall)
     return tmpLine;
 }
 
-QLineF robotview::nearRobotLine(Wall& wall, QPointF p)
+QLineF robotview::nearRobotLine(Wall& wall, QPointF p) // Возвращает наименьший из перпендикуляров от точки до ребер стены
 {
     QList<qreal> len;
     qreal min=0;
@@ -463,21 +429,7 @@ QLineF robotview::nearRobotLine(Wall& wall, QPointF p)
     return wall.getLine(j);
 }
 
-QPointF robotview::interPoint(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal y3, qreal x4, qreal y4)
-{
-    qreal a1 = (y2-y1)/(x2-x1);
-    qreal b1 = y1 - x1*a1;
-
-    qreal a2 = (y4-y3)/(x4-x3);
-    qreal b2 = y3 - x3*a2;
-
-    qreal cx = (b2-b1)/(a1-a2);
-    qreal cy = a1 * cx + b1;
-
-    return QPointF(cx, cy);
-}
-
-QPointF robotview::normalPoint(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal y3)
+QPointF robotview::normalPoint(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3, qreal y3) // Возвращает точку прямой, в которую опустится перпендикуляр из заданной точки
 {
     if (x1 == x2) return QPointF(x2, y3);
     qreal x0 = (x1*(y2-y1)*(y2-y1) + x3*(x2-x1)*(x2-x1) + (x2-x1)*(y2-y1)*(y3-y1))/((y2-y1)*(y2-y1) + (x2-x1)*(x2-x1));
@@ -485,12 +437,9 @@ QPointF robotview::normalPoint(qreal x1, qreal y1, qreal x2, qreal y2, qreal x3,
     return QPointF(x0, y0);
 }
 
-QPointF robotview::mul(QPointF vector, qreal scalar)
+QVector2D robotview::mul(QVector2D vector, qreal scalar)
 {
-    return QPointF(vector.rx()*scalar, vector.ry()*scalar);
+    return QVector2D(vector.x()*scalar, vector.y()*scalar);
 }
 
-QString robotview::toString(QPointF point)
-{
-    return ( QString::number (point.rx(), 'g',20) + ", " + QString::number(point.ry(), 'g',20));
-}
+

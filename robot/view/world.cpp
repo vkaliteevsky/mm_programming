@@ -41,21 +41,18 @@ world::world(QWidget *parent)
 
 void world::timerEvent(QTimerEvent *)
 {
-
     for (int i = 0; i < 4; i++)
     {
         robot->setWall(i, NULL);
     }
-    robot->updateCoord();
 
-    for (int i = 0; i < walls.length(); i++) {
+    for (int i = 0; i < walls.length(); i++) { // Ищет коллизии
         robot->checkCollision(*(walls[i]));
             robot->updateCoord();
     }
-    robot->updateVelocity(mDelta);
-    robot->updateCoord();
+    robot->updateVelocity(mDelta); // Считаем изменение скорости и угла
 
-    for (int i = 0; i < 4; i++){
+    for (int i = 0; i < 4; i++){ // Вытаскиваем из стен
         for (int j = 0; j < walls.length(); j++) {
             if (robot->isCollision(*(walls[j]), i)) {
                 robot->getRobotFromWall(*(walls[j]), i);
@@ -67,8 +64,7 @@ void world::timerEvent(QTimerEvent *)
             }
         }
     }
-    robot->nextStep(mDelta);
-    robot->updateCoord();
+    robot->nextStep(mDelta); //Сдвигаем и поварачиваем
 }
 
 
