@@ -7,7 +7,7 @@
 
 
 Wall::Wall(qreal x, qreal y, qreal width, qreal height, qreal angle, qreal fric)
-    : mColor(150,20,20), r(0)
+    : mColor(150,20,20)
 {
     mX = x;
     mY = y;

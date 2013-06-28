@@ -12,9 +12,9 @@
 #include <math.h>
 
 robotview::robotview()
-    : angle(330), mass(100), size(40), V0(10), momentI(200), motorFactor(70),mAngularVelocity(0)
+    : mAngle(330), mMass(100), mSize(40), mFullSpeed(10), mMomentI(200), mMotorFactor(70),mAngularVelocity(0)
 {
-    setRotation(angle);
+    setRotation(mAngle);
     for (int i =0; i<4; i++){
         setWall (i, NULL);
     }
@@ -25,20 +25,21 @@ robotview::robotview()
 
 QRectF robotview::boundingRect() const
 {
-    QRectF rect(-size*2, -size*2, size*4, size*4);
+    QRectF rect(-mSize*2, -mSize*2, mSize*4, mSize*4);
     return rect;
 }
 
 QPainterPath robotview::shape() const
 {
     QPainterPath path;
-    path.addRect(-size/2, -size/2, size, size);
+    path.addRect(-mSize/2, -mSize/2, mSize, mSize);
     return path;
 }
 
 
 void robotview::setV(QPointF& V)
 {
+    qreal V0 = getFullSpeed();
     if(length(V) > V0)
     {
         qreal x = V0/length(V);
@@ -55,7 +56,7 @@ QPointF robotview::getV()const
 void robotview::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
     painter->setBrush(QColor(0,0,0));
-    setRotation(angle);
+    setRotation(mAngle);
     painter->setBrush(QColor(90,90,90));
     painter->drawRect(-20,-20,40,40);
     painter->save();
@@ -90,19 +91,19 @@ void robotview::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidg
 void robotview::updateAngle()
 {
     QPointF V = getV();
-    angle = 180 * atan2(V.ry(), V.rx())/M_PI;
-    setRotation(angle);
+    mAngle = 180 * atan2(V.ry(), V.rx())/M_PI;
+    setRotation(mAngle);
 }
 
 void robotview::updateCoord()
 {
     double x = pos().rx();
     double y = pos().ry();
-    double nx = cos(angle * M_PI/180);
-    double ny = sin(angle * M_PI/180);
+    double nx = cos(mAngle * M_PI/180);
+    double ny = sin(mAngle * M_PI/180);
 
-    double nnx = nx*(size/2);
-    double nny = ny*(size/2);
+    double nnx = nx*(mSize/2);
+    double nny = ny*(mSize/2);
 
     mP[0] = QPointF(x + nnx + nny, y + nny - nnx);
     mP[1] = QPointF(x + nnx - nny, y + nny + nnx);
@@ -121,7 +122,7 @@ void robotview::nextStep(qreal dt)
 
     mPos = pos();
     setPos( mPos += getV()*dt);
-    angle += mAngularVelocity*dt;
+    mAngle += mAngularVelocity*dt;
     updateCoord();
 }
 
@@ -223,15 +224,16 @@ bool robotview::isEdgeCollision(Wall& wall, int i)
 
 void robotview::updateVelocity(qreal dt) {
 
-    mForce *= 0;
-    mForseMoment = 0;
+    setForce(QPointF(0,0));
+    setForceMoment(0);
 
-    qreal kk = length(getV())*150;
-    qreal angularVelocityFric = fabs(mAngularVelocity*100);
+    qreal rotationalFricFactor = length(getV())*150;
+    qreal angularVelocityFricFactor = fabs(mAngularVelocity*100);
 
-    QPointF napr (cos(angle * M_PI / 180), sin (angle * M_PI / 180));
+    QPointF napr (cos(mAngle * M_PI / 180), sin (mAngle * M_PI / 180));
     qreal scalProd = scalarProduct(getV(), napr);
-    qreal tmp2 = ( V0 - scalProd) * motorFactor;
+    qreal V0 = getFullSpeed();
+    qreal tmp2 = ( V0 - scalProd) * mMotorFactor;
     QPointF F_engine = mul (napr  ,tmp2);
     QPointF p0 = pos();
     mForce = F_engine;
@@ -243,7 +245,7 @@ void robotview::updateVelocity(qreal dt) {
                 QPointF F_norm = mForce;
                 F_norm *= -1;
                 qreal a = vectorProduct(F_norm, tmp);
-                mForseMoment -= a;
+                mForceMoment -= a;
             }
         }
     }
@@ -283,67 +285,68 @@ void robotview::updateVelocity(qreal dt) {
             qreal a = vectorProduct(F_fr_wall, tmp);
             qreal b = vectorProduct(F_norm , tmp);
 
-            mForseMoment -= a;
-            mForseMoment -= b;
+            mForceMoment -= a;
+            mForceMoment -= b;
 
 
         }
     }
 
     QPointF V = getV();
-    QPointF V1 = V + mForce / mass * dt;
+    QPointF V1 = V + mForce / mMass * dt;
     setV(V1);
 
+    qreal momentI = getInertiaMoment();
+    mAngularVelocity += mForceMoment /  momentI * dt;
 
-    mAngularVelocity += mForseMoment /  momentI * dt;
-
-    qreal tmp = mAngularVelocity;
+    qreal tmpAngVel = mAngularVelocity;
     if (mAngularVelocity > 0) {
-        mAngularVelocity -= angularVelocityFric / momentI * dt;
+        mAngularVelocity -= angularVelocityFricFactor / momentI * dt;
     } else {
-        mAngularVelocity += angularVelocityFric / momentI * dt;
+        mAngularVelocity += angularVelocityFricFactor / momentI * dt;
     }
-    if (tmp * mAngularVelocity <= 0) {
+    if (tmpAngVel * mAngularVelocity <= 0) {
         mAngularVelocity = 0;
     }
 
-    QPointF F_fric = QPointF(-napr.ry(), napr.rx());
 
-    F_fric = normalize(F_fric);
+    QPointF rotationalFrictionF = QPointF(-napr.ry(), napr.rx());
 
-    QPointF tmp_mV = getV();
-    if (length(tmp_mV) != 0) {
-        tmp_mV = normalize(tmp_mV);
+    rotationalFrictionF = normalize(rotationalFrictionF);
+
+    QPointF tmpV = getV();
+    if (length(tmpV) != 0) {
+        tmpV = normalize(tmpV);
     }
-    qreal sinus = vectorProduct(tmp_mV, F_fric);
+    qreal sinus = vectorProduct(tmpV, rotationalFrictionF);
 
-    F_fric = mul(F_fric ,sinus*kk);
+    rotationalFrictionF = mul(rotationalFrictionF ,sinus * rotationalFricFactor);
 
     V = getV();
-    if (scalarProduct(F_fric, V) > 0) {
-        F_fric = -F_fric;
+    if (scalarProduct(rotationalFrictionF, V) > 0) {
+        rotationalFrictionF = -rotationalFrictionF;
     }
 
-    QPointF mVtmp = V + F_fric / mass * dt;
-    qreal sc_1 = scalarProduct(mVtmp, F_fric);
+    QPointF newV = V + rotationalFrictionF / mMass * dt;
+    qreal sc_1 = scalarProduct(newV, rotationalFrictionF);
     if (sc_1 > 0) {
-        qreal sc_2 = -scalarProduct(V, F_fric);
+        qreal sc_2 = -scalarProduct(V, rotationalFrictionF);
         if(sc_2 < 0) {
             QMessageBox msb;
             msb.setText("error");
             msb.exec();
         }
         qreal dt_tmp = dt *sc_2/(sc_2 + sc_1);
-        QPointF V1 = V + F_fric / mass * dt_tmp;
+        QPointF V1 = V + rotationalFrictionF / mMass * dt_tmp;
         setV(V1);
 
     }  else {
-        setV(mVtmp);
+        setV(newV);
     }
     V = getV();
     if ( length(V) > V0){
-        V1 = normalize(V) * V0;
-        setV(V1);
+        newV = normalize(V) * V0;
+        setV(newV);
     }
 }
 

@@ -44,42 +44,72 @@ public:
     bool isParallel(QLineF l1, QLineF l2);
     void setV(QPointF& V);
     QPointF getV()const;
+    void update();
     QPointF mPos;
-    void* w;
 
-    //QList<Wall*> mWalls;
     Wall* mWalls[4];
     Wall* mEdgeWalls[4];
 
-
-    void update();
-    //private:
-
-
-
-
-
-
-    qreal angle;
-    qreal mass;
-    qreal size;
-    qreal V0;
-    const qreal momentI;
-    const qreal motorFactor;
-    qreal mAngularVelocity;
-    QPointF mV;//vector
-
-
-    QPointF mForce;//vector
-    qreal mForseMoment;
+    qreal getAngle()
+    {
+        return mAngle;
+    }
+    qreal getMass()
+    {
+        return mMass;
+    }
+    qreal getSize()
+    {
+        return mSize;
+    }
+    qreal getFullSpeed()
+    {
+        return mFullSpeed;
+    }
+    qreal getInertiaMoment()
+    {
+        return mMomentI;
+    }
+    qreal getMotorFactor()
+    {
+        return mMotorFactor;
+    }
+    qreal getAngularVelocity()
+    {
+        return mAngularVelocity;
+    }
+    QPointF getForce()
+    {
+        return mForce;
+    }
+    qreal getForceMoment()
+    {
+        return mForceMoment;
+    }
+    void setForce(QPointF force)
+    {
+        mForce = force;
+    }
+    void setForceMoment(qreal forceMoment)
+    {
+        mForceMoment = forceMoment;
+    }
 
     QList<QPointF> mEdP;
-
     QPointF mP[4];
     QLineF mL[4];
 
 private:
-
+    QPointF mForce;//vector
+    qreal mForceMoment;
+    QPointF mV; //velocity vector
+    qreal mAngle;
+    qreal mMass;
+    qreal mSize;
+    qreal mFullSpeed;
+    const qreal mMomentI;
+    const qreal mMotorFactor;
+    qreal mAngularVelocity;
 
 };
 #endif // ROBOTVIEW_H

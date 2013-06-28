@@ -25,10 +25,7 @@ protected:
 private:
     QGraphicsView* view;
     QList<Wall*> walls;
-
     robotview* robot;
-    QGraphicsLineItem* line2;
-
     QPointF curPoint;
     qreal mDelta;
 
